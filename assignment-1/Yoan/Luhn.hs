@@ -1,14 +1,10 @@
 getDigits :: Integer -> [Integer]
 getDigits = map (read . return) . show
 
+getRevDigits = reverse . getDigits
+
 getInnerDigits :: [Integer] -> [[Integer]]
 getInnerDigits x = map (getDigits) x
-
-getRevDigits x = (reverse . getDigits) x
-
-lastDigit x = (last . getDigits) x
-
-dropLastDigit x = (reverse . (drop 1) . getRevDigits) x
 
 doubleEveryOther :: [Integer] -> [Integer]
 doubleEveryOther [x] = [x]
