@@ -1,4 +1,4 @@
-module Lab1 (main) where
+module Luhn (main) where
 
 listify :: Integer -> [Integer]
 listify x = (x `mod` 10) : tail
