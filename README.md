@@ -3,4 +3,4 @@
 - Zacharopoulos Theologos
 - Guido Loupias
 - Jelle van Assema 
-- Yohan-Alexander Grigorov
+- Yoan-Alexander Grigorov
