@@ -49,8 +49,8 @@ count :: (Eq a) => a -> [a] -> Int
 count element = length . filter (== element)
 
 honest :: [Boy]
-honest = filter (\boy -> count boy correctAccusations == lengthGuilty) boys
-  where correctAccusations = concatMap accusers guilty
-        lengthGuilty       = length guilty
+honest = filter (\boy -> count boy guiltyAccusations == lengthGuilty) boys
+  where guiltyAccusations = concatMap accusers guilty
+        lengthGuilty      = length guilty
 
 main = putStrLn "Hello, world"
