@@ -58,11 +58,12 @@ correctAccusersRec [] = []
 correctAccusersRec (firstGuilty:otherGuilty) = 
     (honestRec otherGuilty) ++ accusers firstGuilty
 -- Gives the list of accusers who pointed out a guilty boy
+-- Duplicate entries if a boy accused multiple guilty boys
 correctAccusers :: [Boy]
 correctAccusers = correctAccusersRec guilty
 
 
--- Gives the list of honest boys, those who pointed out all the guilty boys
+-- Gives the list of honest boys, those who accused out ALL guilty boys
 honest :: [Boy]
 honest = 
     filter (\n -> (count n correctAccusers) == (length guilty)) correctAccusers
