@@ -29,8 +29,8 @@ says x y = False
 
 accusersRec :: Boy -> [Boy] -> [Boy]
 accusersRec _ [] = []
-accusersRec b (firstBoy:otherBoys) = (accusersRec b otherBoys) ++ 
-                                    (if says firstBoy b then [firstBoy] else [])
+accusersRec b (firstBoy:otherBoys) = 
+    (accusersRec b otherBoys) ++ (if says firstBoy b then [firstBoy] else [])
 -- Gives a list of accusers of the boy                                    
 accusers :: Boy -> [Boy]
 accusers b = accusersRec b boys 
@@ -38,23 +38,23 @@ accusers b = accusersRec b boys
 
 guiltyRec :: [Boy] -> [Boy]
 guiltyRec [] = []
-guiltyRec (firstBoy:otherBoys) = guiltyRec otherBoys ++
-                                    if (length $ accusers firstBoy) == 3 then [firstBoy] 
-                                    else [] 
+guiltyRec (firstBoy:otherBoys) = 
+    guiltyRec otherBoys ++
+    if (length $ accusers firstBoy) == 3 then [firstBoy]
+    else [] 
 -- Gives the list of guilty boy(s)
 guilty :: [Boy]
 guilty = guiltyRec boys
 
 
 
-honestRec :: Boy -> [Boy] -> [Boy]
-honestRec _ [] = []
-honestRec guiltyBoy (firstBoy:otherBoys) = (honestRec guiltyBoy otherBoys) ++
-                                    if (says firstBoy guiltyBoy) then [firstBoy]
-                                    else []
+honestRec :: [Boy] -> [Boy]
+honestRec [] = []
+honestRec (firstGuilty:otherGuilty) = 
+    (honestRec otherGuilty) ++ accusers firstGuilty
 -- Gives the list of honest boys, i.e. those who pointed out the guilty boy
 honest :: [Boy]
-honest = honestRec (head guilty) boys
+honest = honestRec guilty
 
 
 main :: IO ()
