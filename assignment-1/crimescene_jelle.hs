@@ -33,34 +33,37 @@ says Carl x = not (says Arnold x)
 says x y = False
 
 
-accusersRec :: Boy -> [Boy] -> [Boy]
-accusersRec _ [] = []
-accusersRec b (firstBoy:otherBoys) = 
-    (accusersRec b otherBoys) ++ (if says firstBoy b then [firstBoy] else [])
 -- Gives a list of accusers of the boy                                    
 accusers :: Boy -> [Boy]
 accusers b = accusersRec b boys 
+    where
+        accusersRec :: Boy -> [Boy] -> [Boy]
+        accusersRec _ [] = []
+        accusersRec b (firstBoy:otherBoys) = 
+            (accusersRec b otherBoys) ++ (if says firstBoy b then [firstBoy] else [])
 
-
-guiltyRec :: [Boy] -> [Boy]
-guiltyRec [] = []
-guiltyRec (firstBoy:otherBoys) = 
-    guiltyRec otherBoys ++
-    if (length $ accusers firstBoy) == 3 then [firstBoy]
-    else [] 
+ 
 -- Gives the list of guilty boy(s)
 guilty :: [Boy]
 guilty = guiltyRec boys
+    where
+        guiltyRec :: [Boy] -> [Boy]
+        guiltyRec [] = []
+        guiltyRec (firstBoy:otherBoys) = 
+            guiltyRec otherBoys ++
+            if (length $ accusers firstBoy) == 3 then [firstBoy]
+            else []
 
 
-correctAccusersRec :: [Boy] -> [Boy]
-correctAccusersRec [] = []
-correctAccusersRec (firstGuilty:otherGuilty) = 
-    (honestRec otherGuilty) ++ accusers firstGuilty
 -- Gives the list of accusers who pointed out a guilty boy
 -- Duplicate entries if a boy accused multiple guilty boys
 correctAccusers :: [Boy]
 correctAccusers = correctAccusersRec guilty
+    where
+        correctAccusersRec :: [Boy] -> [Boy]
+        correctAccusersRec [] = []
+        correctAccusersRec (firstGuilty:otherGuilty) = 
+            (correctAccusersRec otherGuilty) ++ accusers firstGuilty
 
 
 -- Gives the list of honest boys, those who accused ALL guilty boys
