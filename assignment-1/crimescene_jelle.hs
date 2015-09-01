@@ -1,16 +1,16 @@
-module Main (main) where
+module Crimescene (main) where
 
 data Boy = Matthew | Peter | Jack | Arnold | Carl deriving (Eq,Show)
 boys = [Matthew, Peter, Jack, Arnold, Carl]
 
-xor :: Bool -> Bool -> Bool
 
+xor :: Bool -> Bool -> Bool
 xor True x = not x
 xor False x = x
 
 
+-- True if first boy accuses the second, False otherwise
 says :: Boy -> Boy -> Bool
-
 says Matthew Peter = True
 says Matthew Jack = True
 says Matthew Arnold = True
@@ -27,33 +27,37 @@ says Carl x = not (says Arnold x)
 says x y = False
 
 
-accusers_rec :: Boy -> [Boy] -> [Boy]
-accusers_rec _ [] = []
-accusers_rec b (first_boy:other_boys) = (accusers_rec b other_boys) ++ 
-                                    (if says first_boy b then [first_boy] else [])
-
+accusersRec :: Boy -> [Boy] -> [Boy]
+accusersRec _ [] = []
+accusersRec b (firstBoy:otherBoys) = (accusersRec b otherBoys) ++ 
+                                    (if says firstBoy b then [firstBoy] else [])
+-- Gives a list of accusers of the boy                                    
 accusers :: Boy -> [Boy]
-accusers b = accusers_rec b boys 
+accusers b = accusersRec b boys 
 
-guilty_rec :: [Boy] -> [Boy]
-guilty_rec [] = []
-guilty_rec (first_boy:other_boys) = guilty_rec other_boys ++
-                                    if (length $ accusers first_boy) == 3 then [first_boy] 
+
+guiltyRec :: [Boy] -> [Boy]
+guiltyRec [] = []
+guiltyRec (firstBoy:otherBoys) = guiltyRec otherBoys ++
+                                    if (length $ accusers firstBoy) == 3 then [firstBoy] 
                                     else [] 
-
+-- Gives the list of guilty boy(s)
 guilty :: [Boy]
-guilty = guilty_rec boys
+guilty = guiltyRec boys
 
 
-honest_rec :: Boy -> [Boy] -> [Boy]
-honest_rec _ [] = []
-honest_rec guilty_boy (first_boy:other_boys) = (honest_rec guilty_boy other_boys) ++
-                                    if (says first_boy guilty_boy) then [first_boy]
+
+honestRec :: Boy -> [Boy] -> [Boy]
+honestRec _ [] = []
+honestRec guiltyBoy (firstBoy:otherBoys) = (honestRec guiltyBoy otherBoys) ++
+                                    if (says firstBoy guiltyBoy) then [firstBoy]
                                     else []
-
+-- Gives the list of honest boys, i.e. those who pointed out the guilty boy
 honest :: [Boy]
-honest = honest_rec (head guilty) boys
+honest = honestRec (head guilty) boys
 
 
 main :: IO ()
-main = putStrLn $ show $ honest
+main = do
+    putStrLn $ "Honest: " ++ show honest
+    putStrLn $ "Guilty: " ++ show guilty
