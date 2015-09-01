@@ -11,6 +11,10 @@ xor True x = not x
 xor False x = x
 
 
+count :: (Eq a) => a -> [a] -> Int
+count element list = length (filter (\x -> x == element) list) 
+
+
 -- True if first boy accuses the second, False otherwise
 says :: Boy -> Boy -> Bool
 says Matthew Peter = True
@@ -49,13 +53,19 @@ guilty :: [Boy]
 guilty = guiltyRec boys
 
 
-honestRec :: [Boy] -> [Boy]
-honestRec [] = []
-honestRec (firstGuilty:otherGuilty) = 
+correctAccusersRec :: [Boy] -> [Boy]
+correctAccusersRec [] = []
+correctAccusersRec (firstGuilty:otherGuilty) = 
     (honestRec otherGuilty) ++ accusers firstGuilty
--- Gives the list of honest boys, i.e. those who pointed out the guilty boy
+-- Gives the list of accusers who pointed out a guilty boy
+correctAccusers :: [Boy]
+correctAccusers = correctAccusersRec guilty
+
+
+-- Gives the list of honest boys, those who pointed out all the guilty boys
 honest :: [Boy]
-honest = honestRec guilty
+honest = 
+    filter (\n -> (count n correctAccusers) == (length guilty)) correctAccusers
 
 
 main :: IO ()
