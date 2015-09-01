@@ -21,13 +21,8 @@ nextABC x (a,b,c) | a+1 < b-1   = (a+1,b-1,c) : nextABC x (a+1,b-1,c)
                   | c+1 < x-c-1 = domainABC x (c+1) 
                   | otherwise   = []
 
-isPythagoreanTriplet :: Triple Integer -> Bool
-isPythagoreanTriplet (a,b,c) = a*a + b*b == c*c -- && a < b && b < c
-    -- domainABC only produces triplets where a < b < c
-    -- TODO: try to prove claim
-
 pythagoreanTriplets :: Integer -> [Triple Integer]
-pythagoreanTriplets x = filter isPythagoreanTriplet $ domainABC x (lowC x)
+pythagoreanTriplets x = filter (\(a,b,c) -> a*a+b*b==c*c) $ domainABC x (lowC x)
 
 main :: IO ()
 main = putStrLn $ show $ (\(a,b,c) -> a*b*c) $ head $ pythagoreanTriplets 1000
