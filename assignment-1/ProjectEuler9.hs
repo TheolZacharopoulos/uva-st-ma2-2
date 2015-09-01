@@ -23,7 +23,7 @@ nextABC x (a,b,c) | a+1 < b-1   = (a+1,b-1,c) : nextABC x (a+1,b-1,c)
 
 firstPythagoreanTriplet :: Integer -> Triple Integer
 firstPythagoreanTriplet x = head $
-                            dropWhile (\(a,b,c) -> a*a+b*b/=c*c) $
+                            dropWhile (\(a,b,c) -> a*a + b*b /= c*c) $
                             domainABC x (lowC x)
 
 main :: IO ()
