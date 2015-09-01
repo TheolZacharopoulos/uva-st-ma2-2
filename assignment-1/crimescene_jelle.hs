@@ -63,7 +63,7 @@ correctAccusers :: [Boy]
 correctAccusers = correctAccusersRec guilty
 
 
--- Gives the list of honest boys, those who accused out ALL guilty boys
+-- Gives the list of honest boys, those who accused ALL guilty boys
 honest :: [Boy]
 honest = 
     filter (\n -> (count n correctAccusers) == (length guilty)) correctAccusers
