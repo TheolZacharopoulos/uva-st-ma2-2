@@ -12,14 +12,14 @@ domainABC x c = (a,b,c) : nextABC x (a,b,c)
         a = x-b-c
 
 nextABC :: Integer -> Triple Integer -> [Triple Integer]
-nextABC x (a,b,c) | a+1 < b-1 = (a+1,b-1,c) : nextABC x (a+1,b-1,c)
+nextABC x (a,b,c) | a+1 < b-1   = (a+1,b-1,c) : nextABC x (a+1,b-1,c)
 -- aa+bb < (a+b)^2, a+b = x-c
 -- =>
 -- aa+bb < (x-c)^2
 -- =>
 -- for c >= x-c there is no pythagorean triplet
-                  | c+1 < x-c = domainABC x (c+1) 
-                  | otherwise = []
+                  | c+1 < x-c-1 = domainABC x (c+1) 
+                  | otherwise   = []
 
 isPythagoreanTriplet :: Triple Integer -> Bool
 isPythagoreanTriplet (a,b,c) = a*a + b*b == c*c -- && a < b && b < c
