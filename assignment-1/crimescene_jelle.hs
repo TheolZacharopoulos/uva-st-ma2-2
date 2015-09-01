@@ -1,3 +1,5 @@
+-- Team pt ma2-2
+
 module Crimescene (main) where
 
 data Boy = Matthew | Peter | Jack | Arnold | Carl deriving (Eq,Show)
@@ -45,7 +47,6 @@ guiltyRec (firstBoy:otherBoys) =
 -- Gives the list of guilty boy(s)
 guilty :: [Boy]
 guilty = guiltyRec boys
-
 
 
 honestRec :: [Boy] -> [Boy]
