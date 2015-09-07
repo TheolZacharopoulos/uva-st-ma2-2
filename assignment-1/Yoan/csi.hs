@@ -50,3 +50,9 @@ guiltyFinder (current:everybodyElse) = (if accusersCount current == 3 then [curr
 guilty :: [Boy]
 guilty = guiltyFinder boys
 
+findHonest :: [Boy] -> [Boy]
+findHonest (k:ks) = (if accusersCount k == 3 then (flip says) (accusers k) else findHonest ks)
+
+honest :: [Boy]
+honest = findHonest boys
+
