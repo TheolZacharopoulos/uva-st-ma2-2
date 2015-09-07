@@ -5,7 +5,7 @@ import Data.List
 data Shape = NoTriangle | Equilateral | Isosceles  | Rectangular | Other deriving (Eq, Show)
 
 triangleUsorted :: [Integer] -> Shape
-triangleUsorted [a,b,c] | (a > 0) && (b > 0) && (c > 0) = NoTriangle 
+triangleUsorted [a,b,c] | (a <= 0) || (b <= 0) || (c <= 0) = NoTriangle 
                         | a >= b + c                    = NoTriangle 
                         | b == c                        = Equilateral 
                         | (a == b) && (b == a)          = Isosceles
@@ -13,4 +13,4 @@ triangleUsorted [a,b,c] | (a > 0) && (b > 0) && (c > 0) = NoTriangle
                         | otherwise                     = Other
 
 triangle :: Integer -> Integer -> Integer -> Shape
-triangle a b c = triangleUsorted (sort [a,b,c])
+triangle a b c = triangleUsorted (reverse (sort [a,b,c]))
