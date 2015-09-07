@@ -1,4 +1,7 @@
-module Lab2 where
+module TriangleTests where
+
+import Lecture2Test
+import Triangle 
 
 import Data.List
 import System.Random
@@ -6,40 +9,17 @@ import System.Random
 type Triple a = (a,a,a)
 
 limit :: Integer
-limit = 1000
+limit = 10000
 
-shuffleTriple :: Triple Integer -> IO (Triple Integer)
-shuffleTriple (a,b,c) = do
-    x   <- randomRIO (0, 5)
-    abc <- return $ permutations [a,b,c] !! x
+shuffle :: IO (Triple Integer) -> IO (Triple Integer)
+shuffle gen = do
+    (a,b,c) <- gen
+    x       <- randomRIO (0, 5)
+    abc     <- return $ permutations [a,b,c] !! x
     return (abc !! 0, abc !! 1, abc !! 2)
 
-randomRangeWithExclusions :: Integer -> Integer -> [Integer]
-                          -> IO Integer
-randomRangeWithExclusions lower upper exclusions = do
-    x <- randomRIO (0, length xs - 1) 
-    return $ xs !! x
-    where xs = [lower..upper] \\ exclusions
-
-triangleTestCases :: Int -> IO [Triple Integer]
-triangleTestCases 0 = return []
-triangleTestCases n = do
-    x    <- randomRIO (0, 1) :: IO Integer
-    abc' <- correctTestCase
-    abc  <- shuffleTriple abc'
-    xs   <- triangleTestCases (n-1)
-    return $ abc : xs
-
-correctTestCase :: IO (Triple Integer)
-correctTestCase = do
-    x <- randomRIO (0, 5) :: IO Integer
-    case x of
-        0 -> negativeOrZeroSideCase
-        1 -> longSideCase
-        2 -> equilateralCase
-        3 -> isoscelesCase
-        4 -> rectangularCase
-        5 -> otherCase
+curriedTriangle :: Triple Integer -> Shape
+curriedTriangle (a,b,c) = triangle a b c
 
 negativeOrZeroSideCase :: IO (Triple Integer)
 negativeOrZeroSideCase = do
@@ -48,6 +28,10 @@ negativeOrZeroSideCase = do
     c <- randomRIO (1, limit)
     return (a,b,c)
 
+testNegativeOrZeroSideCase :: IO ()
+testNegativeOrZeroSideCase =
+    testPost curriedTriangle (== NoTriangle) negativeOrZeroSideCase
+
 longSideCase :: IO (Triple Integer)
 longSideCase = do
     a <- randomRIO (1, limit)
@@ -55,16 +39,36 @@ longSideCase = do
     c <- randomRIO (a+b+1, a+b+1+limit)
     return (a,b,c)
 
+testLongSideCase :: IO ()
+testLongSideCase =
+    testPost curriedTriangle (== NoTriangle) longSideCase
+
 equilateralCase :: IO (Triple Integer)
 equilateralCase = do
     a <- randomRIO (1, limit)
     return (a,a,a)
+
+testEquilateralCase :: IO ()
+testEquilateralCase =
+    testPost curriedTriangle (== Equilateral) equilateralCase
+
+randomRangeWithExclusions :: Integer -> Integer -> [Integer]
+                          -> IO Integer
+randomRangeWithExclusions lower upper exclusions = do
+    x <- randomRIO (lower, upper) 
+    if length (intersect [x] exclusions) == 1
+      then randomRangeWithExclusions lower upper exclusions
+      else return x
 
 isoscelesCase :: IO (Triple Integer)
 isoscelesCase = do
     ab <- randomRIO (1, limit)
     c  <- randomRangeWithExclusions 1 (2*ab-1) [ab]
     return (ab, ab, c)
+
+testIsoscelesCase :: IO ()
+testIsoscelesCase =
+    testPost curriedTriangle (== Isosceles) isoscelesCase
 
 allRectangularCases :: [Triple Integer]
 allRectangularCases = [(3,4,5),(5,12,13),(9,40,41)]
@@ -78,6 +82,10 @@ rectangularCase = do
     x <- randomRIO (0, length allRectangularCases - 1)
     return $ allRectangularCases !! x
 
+testRectangularCase :: IO ()
+testRectangularCase =
+    testPost curriedTriangle (== Rectangular) rectangularCase
+
 otherCase :: IO (Triple Integer)
 otherCase = do
     a <- randomRIO (1, limit)
@@ -85,4 +93,6 @@ otherCase = do
     c <- randomRangeWithExclusions 1 (a+b-1) [a,b]
     if isRectangularCase (a,b,c) then otherCase else return (a,b,c)
 
-main = putStrLn "Hello, world!" 
+testOtherCase :: IO ()
+testOtherCase =
+    testPost curriedTriangle (== Other) otherCase
