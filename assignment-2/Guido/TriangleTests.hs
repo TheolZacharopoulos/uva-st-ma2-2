@@ -1,7 +1,7 @@
 module TriangleTests where
 
 import Lecture2Test
-import Triangle 
+import Triangle
 
 import Data.List
 import System.Random
@@ -55,7 +55,7 @@ testEquilateralCase =
 randomRangeWithExclusions :: Integer -> Integer -> [Integer]
                           -> IO Integer
 randomRangeWithExclusions lower upper exclusions = do
-    x <- randomRIO (lower, upper) 
+    x <- randomRIO (lower, upper)
     if length (intersect [x] exclusions) == 1
       then randomRangeWithExclusions lower upper exclusions
       else return x
@@ -70,12 +70,22 @@ testIsoscelesCase :: IO ()
 testIsoscelesCase =
     testPost curriedTriangle (== Isosceles) isoscelesCase
 
+calcPossibleRectCases :: Triple Integer -> [Triple Integer] -> Integer -> [Triple Integer]
+calcPossibleRectCases (a, b, c) theRest n = do
+    if a*n > limit || b*n > limit || c*n > limit then
+        theRest
+    else
+        calcPossibleRectCases (a, b, c) (theRest ++ [(a*n, b*n, c*n)]) (n+1)
+
+allRectangularBaseCases :: [Triple Integer]
+allRectangularBaseCases = [(3,4,5),(5,12,13),(9,40,41)]
+
 allRectangularCases :: [Triple Integer]
-allRectangularCases = [(3,4,5),(5,12,13),(9,40,41)]
+allRectangularCases = concatMap (\t -> calcPossibleRectCases t [] 1) allRectangularBaseCases
 
 isRectangularCase :: Triple Integer -> Bool
 isRectangularCase (a,b,c) = c'^2 == a'^2 + b'^2
-    where [a',b',c'] = sort [a,b,c] 
+    where [a',b',c'] = sort [a,b,c]
 
 rectangularCase :: IO (Triple Integer)
 rectangularCase = do
