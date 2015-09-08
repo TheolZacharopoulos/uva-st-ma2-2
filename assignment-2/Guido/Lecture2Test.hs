@@ -1,5 +1,8 @@
 module Lecture2Test where
 
+numTests :: Int
+numTests = 1000
+
 -- Generalized test framework from lecture 2
 testR :: (Show a,  Show b)
       => Int
@@ -18,7 +21,7 @@ testR k n f r gen | k == n    = print (show n ++ " tests passed")
     else error ("failed test on: (" ++ show h ++ ", " ++ show h' ++ ")")
 
 testPost :: (Show a, Show b) => (a -> b) -> (b -> Bool) -> IO a -> IO ()
-testPost f p = testR 1 100 f (\_ -> p)
+testPost f p = testR 1 numTests f (\_ -> p)
 
 testRel :: (Show a, Show b) => (a-> b) -> (a -> b -> Bool) -> IO a -> IO ()
-testRel = testR 1 100
+testRel = testR 1 numTests
