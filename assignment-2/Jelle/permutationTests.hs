@@ -12,7 +12,7 @@ curriedIsPermutation :: Eq a => ([a], [a]) -> Bool
 curriedIsPermutation (l1, l2) = isPermutation l1 l2
 
 limit :: Integer
-limit = 1
+limit = 10
 
 -- source: https://wiki.haskell.org/Random_shuffle
 shuffle :: [a] -> IO [a]
