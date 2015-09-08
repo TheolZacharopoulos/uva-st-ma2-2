@@ -71,7 +71,7 @@ testIsoscelesCase =
     testPost curriedTriangle (== Isosceles) isoscelesCase
 
 calcPossibleRectCases :: Triple Integer -> [Triple Integer] -> Integer -> [Triple Integer]
-calcPossibleRectCases (a, b, c) theRest n = do
+calcPossibleRectCases (a, b, c) theRest n =
     if a*n > limit || b*n > limit || c*n > limit then
         theRest
     else
@@ -81,7 +81,11 @@ allRectangularBaseCases :: [Triple Integer]
 allRectangularBaseCases = [(3,4,5),(5,12,13),(9,40,41)]
 
 allRectangularCases :: [Triple Integer]
-allRectangularCases = concatMap (\t -> calcPossibleRectCases t [] 1) allRectangularBaseCases
+allRectangularCases = (\t ->
+    calcPossibleRectCases (t !! 0) [] 1 ++
+    calcPossibleRectCases (t !! 1) [] 1 ++
+    calcPossibleRectCases (t !! 2) [] 1
+    ) allRectangularBaseCases
 
 isRectangularCase :: Triple Integer -> Bool
 isRectangularCase (a,b,c) = c'^2 == a'^2 + b'^2
