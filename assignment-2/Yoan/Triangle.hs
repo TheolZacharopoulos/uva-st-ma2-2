@@ -1,7 +1,6 @@
-module Lab2 where
+module Triangle where
 
 import Data.List
-import System.Random
 
 data Shape = NoTriangle | Equilateral
            | Isosceles  | Rectangular | Other deriving (Eq,Show,Ord)
