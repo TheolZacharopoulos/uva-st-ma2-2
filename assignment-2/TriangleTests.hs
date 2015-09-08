@@ -109,3 +109,15 @@ otherCase = do
 testOtherCase :: IO ()
 testOtherCase =
     testPost curriedTriangle (== Other) otherCase
+
+allTriangleTests = [
+    testNegativeOrZeroSideCase,
+    testLongSideCase,
+    testEquilateralCase,
+    testIsoscelesCase,
+    testRectangularCase,
+    testOtherCase]
+
+---- Execute all the triangle tests.
+testAllTriangles :: IO [()]
+testAllTriangles = sequence allTriangleTests
