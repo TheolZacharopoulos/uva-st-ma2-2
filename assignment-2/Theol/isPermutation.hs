@@ -1,4 +1,4 @@
-module isPermutation where
+module IsPermutation where
 
 import Data.List
 
