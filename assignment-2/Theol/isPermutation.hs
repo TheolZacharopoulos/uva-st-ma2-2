@@ -1,4 +1,4 @@
-module RecognizingPermutations where
+module isPermutation where
 
 import Data.List
 
