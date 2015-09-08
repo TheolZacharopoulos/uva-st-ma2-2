@@ -1,6 +1,6 @@
 module PermutationTests where
 
-import Permutation
+import IsPermutation
 import Lecture2Test
 
 import Data.List
