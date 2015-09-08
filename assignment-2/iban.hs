@@ -12,5 +12,19 @@ getCodeChar c = (ord c - ord 'a') + 10
 toLowerCase :: String -> String
 toLowerCase = map toLower
 
---iban :: String -> Bool
---iban = 
+-- rotate 4 "ABCDEFG" = "EFGABCD"
+rotate :: Int -> [a] -> [a]
+rotate x = flip (!!) x . iterate f
+  where f []     = []
+        f (x:xs) = xs ++ [x]
+
+-- perform step 2 of chapter 6.1 of the spec
+toNumber :: String -> Integer
+toNumber = read . concatMap f
+  where f :: Char -> String
+        f c = if null (intersect [c] ['a'..'z'])
+              then [c]
+              else show (getCodeChar c)
+
+iban :: String -> Bool
+iban = (== 1) . (`mod` 97) . toNumber . rotate 4 . toLowerCase . removeNonAlphaNum
