@@ -100,12 +100,15 @@ testRectangularCase :: IO ()
 testRectangularCase =
     testPost curriedTriangle (== Rectangular) rectangularCase
 
+isAValidTriangle :: Triple Integer -> Bool
+isAValidTriangle (x, y, z) = x + y > z && x + z > y && z + y > x
+
 otherCase :: IO (Triple Integer)
 otherCase = do
     a <- randomRIO (1, limit)
     b <- randomRangeWithExclusions 1 limit [a]
     c <- randomRangeWithExclusions 1 (a+b-1) [a,b]
-    if isRectangularCase (a,b,c) then otherCase else return (a,b,c)
+    if isRectangularCase (a,b,c) || not (isAValidTriangle (a,b,c)) then otherCase else return (a,b,c)
 
 testOtherCase :: IO ()
 testOtherCase =
