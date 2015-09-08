@@ -10,13 +10,13 @@ limit = 10000
 
 curriedIsDerangement (xs, ys) = isDerangement xs ys
 
---getUniqueRandomList :: Integer -> IO([Integer])
---getUniqueRandomList 0 = do
---	return []
---getRandomList x = do
---	r <- randomRIO(-limit, limit)
---	l <- getRandomList (x-1)
---	return $ [r] ++ l
+getUniqueRandomList :: Integer -> IO([Integer])
+getUniqueRandomList 0 = do
+	return []
+getRandomList x = do
+	r <- randomRIO(-limit, limit)
+	l <- if r `elem` l then getRandomList (x) else getRandomList (x-1)
+	return $ [r] ++ l
 
 --getRandomList :: Integer -> IO([Integer])
 --getRandomList 0 = do

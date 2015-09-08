@@ -50,7 +50,7 @@ getRandomList 0 = do
 getRandomList x = do
     r <- randomRIO (-limit, limit)
     l <- getRandomList (x - 1)
-    return $ [r] ++ l
+    return $ r : l
 
 differentLengthCase :: IO ([Integer], [Integer])
 differentLengthCase = do
