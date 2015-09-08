@@ -51,16 +51,16 @@ extend x = do
 extendedPermutationCase :: IO ([Integer], [Integer])
 extendedPermutationCase = do
     randomized <- randomNumberList
-    shuffled <- shuffle randomized
-    extended <- extend shuffled
-    return (randomized, extended)
+    extended <- extend randomized
+    extendedShuffled <- shuffle extended
+    return (randomized, extendedShuffled)
 
 testRandomPermutationsCase :: IO ()
 testRandomPermutationsCase = do
     testPost curriedIsPermutation (== True) randomPermutationCase
 
-testWrongPermutationsCase :: IO ()
-testWrongPermutationsCase = do
+testModifiedPermutationsCase :: IO ()
+testModifiedPermutationsCase = do
     testPost curriedIsPermutation (== False) modifiedPermutationCase
 
 testDiffLengthPermutationsCase :: IO ()
