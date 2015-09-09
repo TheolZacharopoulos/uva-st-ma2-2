@@ -15,8 +15,7 @@ toLowerCase = map toLower
 -- rotate 4 "ABCDEFG" = "EFGABCD"
 -- rotate (-2) "ABCDEFG" = "FGABCDE"
 rotate :: Int -> [a] -> [a]
-rotate x l | x < 0     = rotate (length l + x) l
-           | otherwise = flip (!!) x $ iterate f l
+rotate x l =  (iterate f l) !! (x `mod` length l)
   where f []     = []
         f (x':xs) = xs ++ [x']
 
