@@ -13,8 +13,10 @@ toLowerCase :: String -> String
 toLowerCase = map toLower
 
 -- rotate 4 "ABCDEFG" = "EFGABCD"
+-- rotate (-2) "ABCDEFG" = "FGABCDE"
 rotate :: Int -> [a] -> [a]
-rotate x = flip (!!) x . iterate f
+rotate x l | x < 0     = rotate (length l + x) l
+           | otherwise = flip (!!) x $ iterate f l
   where f []     = []
         f (x':xs) = xs ++ [x']
 
