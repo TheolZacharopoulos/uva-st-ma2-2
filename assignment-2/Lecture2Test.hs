@@ -24,4 +24,4 @@ testPost :: (Show a, Show b) => (a -> b) -> (b -> Bool) -> IO a -> IO ()
 testPost f p = testR 1 numTests f (\_ -> p)
 
 testRel :: (Show a, Show b) => (a-> b) -> (a -> b -> Bool) -> IO a -> IO ()
-testRel = testR 1 numTests
+testRel f r = testR 1 numTests f r

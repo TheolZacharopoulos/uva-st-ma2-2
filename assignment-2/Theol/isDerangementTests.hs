@@ -3,39 +3,47 @@ module IsDerangementTests where
 import Lecture2Test
 import IsDerangement
 
+import Data.List
 import System.Random
 
 limit :: Integer
-limit = 10000
+limit = 2
 
 curriedIsDerangement (xs, ys) = isDerangement xs ys
 
-getUniqueRandomList :: Integer -> IO([Integer])
+getUniqueRandomList :: Integer -> IO ([Integer])
 getUniqueRandomList 0 = do
-	return []
-getRandomList x = do
-	r <- randomRIO(-limit, limit)
-	l <- if r `elem` l then getRandomList (x) else getRandomList (x-1)
-	return $ [r] ++ l
-
---getRandomList :: Integer -> IO([Integer])
---getRandomList 0 = do
---	return []
---getRandomList x = do
---	r <- randomRIO(-limit, limit)
---	l <- getRandomList (x-1)
---	return $ [r] ++ l
+    return []
+getUniqueRandomList length = do
+    rnd <- randomRIO(-limit, limit)
+    newList <- getUniqueRandomList(length-1)
+    return $ rnd : newList
 
 --derangementCase :: IO ([Integer], [Integer])
 --derangementCase = do
 --	rndLengthXS <- randomRIO(1, limit)
 --	xs <- getUniqueRandomList rndLengthXS
---	ys <- 
-
---testDerangementCase = 
+--	rndIndex <- randomRIO(0, (length xs)-1)
+--	return (xs, permutations xs !! rndIndex)
+--
+--testDerangementCase :: IO ()
+--testDerangementCase =
 --	testPost curriedIsDerangement (==True) derangementCase
 
---notDerangementCase :: IO ([Integer], [Integer])
+--
+-- Generates a random lengths, it creates a new unique list with this length,
+--
+duplicateElementCase :: IO ([Integer], [Integer])
+duplicateElementCase = do
+    length <- randomRIO(1, limit)
+    list1 <- getUniqueRandomList length
+    let list2 = (list1 !! 1):(delete (list1 !! 2) list1)
+    return (list1, list2)
 
---testNotDerangementCase = 
---	testPost curriedIsDerangement (==False) derangementNotCase
+-- testDuplicateElementCase =
+--	testPost curriedIsDerangement (==False) duplicateElementCase
+
+-- elementOnSameIndexCase :: IO ([Integer], [Integer])
+
+-- testRlementOnSameIndexCase =
+--	testPost curriedIsDerangement (==False) elementOnSameIndexCase

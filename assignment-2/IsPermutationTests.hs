@@ -1,6 +1,6 @@
 module PermutationTests where
 
-import IsPermutationr
+import IsPermutation
 import Lecture2Test
 
 import Data.List
@@ -101,7 +101,7 @@ differentElementsCase = do
 -- Expectation: 'False'
 testDifferentLengthCase :: IO ()
 testDifferentLengthCase = 
-    testPost curriedIsPermutation (== False) differentLengthCase 
+    testPost curriedIsPermutation (== False) differentLengthCase
 
 -- Test the permutation lists, case.
 -- Input: two lists which one is the permutation of the other.
