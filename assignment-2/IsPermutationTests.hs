@@ -8,6 +8,16 @@ import System.Random
 import Data.Array.IO
 import Control.Monad
 
+-- Preconditions:
+-- Both lists are of the same type
+-- An Eq function exists for elements of the lists 
+
+-- Postconditions:
+-- Returns true iff:
+--     The lists contain the same elements
+--     The lists have the same length
+-- If returns true for input a, b then returns true for b, a
+
 limit :: Integer
 limit = 10
 
@@ -17,7 +27,7 @@ curriedIsPermutation :: Eq a => ([a], [a]) -> Bool
 curriedIsPermutation (l1, l2) = isPermutation l1 l2
 
 -- Helper function
--- Randomly suffles a list.
+-- Randomly shuffles a list.
 -- source: https://wiki.haskell.org/Random_shuffle
 shuffle :: [a] -> IO [a]
 shuffle xs = do
@@ -34,7 +44,8 @@ shuffle xs = do
     newArray n xs =  newListArray (1,n) xs
 
 -- Helper function
--- Generates a random Integer between `lower` and `upper` limit, excluding a list of integers `exclusions`
+-- Generates a random Integer between `lower` and `upper` limit,
+-- excluding a list of integers `exclusions`
 randomRangeWithExclusions :: Integer -> Integer -> [Integer] -> IO Integer
 randomRangeWithExclusions lower upper exclusions = do
     x <- randomRIO (lower, upper) 
@@ -42,11 +53,14 @@ randomRangeWithExclusions lower upper exclusions = do
       then randomRangeWithExclusions lower upper exclusions
       else return x
 
+-- Helper function
+-- Generates a random list of n Integers
+-- excluding a list of integers `exclusions`
 getRandomListWithExclusions :: Integer -> [Integer] -> IO [Integer]
 getRandomListWithExclusions 0 _ = return []
-getRandomListWithExclusions x exclusions = do
+getRandomListWithExclusions n exclusions = do
     r <- randomRangeWithExclusions (-limit) limit exclusions
-    l <- getRandomListWithExclusions (x - 1) exclusions
+    l <- getRandomListWithExclusions (n - 1) exclusions
     return $ r : l
 
 -- Helper function
@@ -59,10 +73,14 @@ getRandomList x = do
     l <- getRandomList (x - 1)
     return $ r : l
 
+-- TODO #NeverForgetTijs!
 -- This function generates two random lists with different lengths.
 -- Generates a random number as the length of the first list, then generates
 -- a second random number that is smaller than length of the first.
---At last it creates the two random lists and returns the two lists with random order.
+-- At last it creates the two random lists and returns the two lists with random order.
+
+-- Case for 1 of the postconditions:
+-- Lists of a different length are not permutations of each other 
 differentLengthCase :: IO ([Integer], [Integer])
 differentLengthCase = do
     length1 <- randomRIO (1, limit)
@@ -71,9 +89,15 @@ differentLengthCase = do
     shuffledL1 <- shuffle l1  
     return  (l1, take (fromIntegral length2) shuffledL1)
 
+
+-- TODO #NeverForgetTijs!
 -- This function generates two lists which one is permutation of the other.
 -- Generates a random number as the length of the list, then generates a random list
 -- of this length, for the second list it suffles the first list (permutation) and returns the 2 lists.
+
+-- Case for 1 of the postcondition:
+-- Lists containing the same elements and of the same length are permutations
+-- of each other.
 permutationCase :: IO ([Integer], [Integer])
 permutationCase = do
     length1 <- randomRIO(1, limit)
@@ -81,9 +105,13 @@ permutationCase = do
     l2 <- shuffle l1
     return (l1, l2)
 
+-- TODO #NeverForgetTijs!
 -- This function generates two lists which one has different elements than the other.
 -- Generates a random number as the length of the list, then generates a random list
 -- of this length, for the second list includes elements other than those of the first.
+
+-- Case for 1 of the postconditions:
+-- Lists containing different elements are not permutations of each other.
 differentElementsCase :: IO ([Integer], [Integer])
 differentElementsCase = do
     length1 <- randomRIO (1, limit)
@@ -110,9 +138,22 @@ testPermutationCase :: IO ()
 testPermutationCase = 
     testPost curriedIsPermutation (== True) permutationCase 
 
--- Test the different elemets lists, case.
--- Input: two lists which one has (at least one) different element(s) than the other.
+-- Test the different elements lists, case.
+-- Input: two lists which one has (at least one) different 
+-- element(s) than the other.
 -- Expectation: 'False'
 testDifferentElementsCase :: IO ()
 testDifferentElementsCase = 
     testPost curriedIsPermutation (== False) differentElementsCase
+
+
+-- Test if the reverse is also a permutation:
+-- i.e. if a is a permuation of b, then b is a permutation of a.
+-- Expectation: 'True'
+testReversePermutationCase :: IO()
+testReversePermutationCase =
+    testPost 
+        (\(a, b) -> (isPermutation a b) && (isPermutation b a))
+        (== True) 
+        permutationCase
+
