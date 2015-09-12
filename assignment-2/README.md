@@ -7,7 +7,7 @@ You can run all the tests of the modules by loading the **all2.hs** module and r
 *The test reports have been written as comments in the test files.*
 
 ## Time spend
-- Triangles: n-hours.
-- isPermutation: n-hours.
-- isDerangement: n-hours.
-- Iban: n-hours.
+- Triangles: 5-hours.
+- isPermutation: 4-hours.
+- isDerangement: 4-hours.
+- Iban: 4-hours.
