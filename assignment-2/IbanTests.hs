@@ -77,9 +77,8 @@ random non-numeric character.
 random non-numeric character.
 -}
 
-allIbanTests :: IO [()]
-allIbanTests = sequence [testGoodIban, testBadIban]
-
+allIbanTests :: IO ()
+allIbanTests = sequence_ [testGoodIban, testBadIban]
 
 goodIbanCase :: IO String
 goodIbanCase = do
