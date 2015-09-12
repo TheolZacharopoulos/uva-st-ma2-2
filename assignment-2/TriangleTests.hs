@@ -24,10 +24,17 @@ shuffle gen = do
 -- Generates a random Integer between `lower` and `upper` limit, excluding a list of integers `exclusions`
 randomRangeWithExclusions :: Integer -> Integer -> [Integer] -> IO Integer
 randomRangeWithExclusions lower upper exclusions = do
-    x <- randomRIO (lower, upper)
-    if length (intersect [x] exclusions) == 1
-      then randomRangeWithExclusions lower upper exclusions
-      else return x
+    if upper < lower then do
+        error "Upper boundary is lower than lower boundary."
+    else do
+        if ((upper - lower) <= (toInteger $ length exclusions) &&
+            ((sort exclusions) == [lower .. upper])) then do
+        error "Exclusions covers the entire range of numbers"
+        else do
+            x <- randomRIO (lower, upper)
+            if length (intersect [x] exclusions) == 1
+                then randomRangeWithExclusions lower upper exclusions
+            else return x
 
 -- Helper function
 -- Checks the validity of a triangle according to the theory.
