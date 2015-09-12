@@ -3,7 +3,7 @@ module AllTests where
 import TriangleTests (testAllTriangles)
 import IsDerangementTests (testAllDerangement)
 import IsPermutationTests (testAllPermutation)
-import IbanTests (allIbanTests)
+import IbanTests (testAllIbans)
 
 testAll :: IO ()
-testAll = sequence_ [testAllTriangles, testAllDerangement, testAllPermutation, allIbanTests]
+testAll = sequence_ [testAllTriangles, testAllDerangement, testAllPermutation, testAllIbans]
