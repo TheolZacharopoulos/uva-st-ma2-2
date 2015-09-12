@@ -13,12 +13,14 @@ testR :: (Show a,  Show b)
       -> IO ()
 testR k n f r gen | k == n    = print (show n ++ " tests passed")
                   | otherwise = do
+    print ("["++show k++"/"++show n++"] now trying to generate random test case...")
     h  <- gen
+    print ("["++show k++"/"++show n++"] now trying input: `" ++ show h ++ "`")
     h' <- return $ f h
     if r h h' then do
-        print ("pass (actual input: `" ++ show h ++ "`; actual output: `" ++ show h' ++ "`)")
+        print ("["++show k++"/"++show n++"] pass (actual output: `" ++ show h' ++ "`)")
         testR (k+1) n f r gen
-    else error ("fail (actual input: `" ++ show h ++ "`; actual output: `" ++ show h' ++ "`)")
+    else error ("["++show k++"/"++show n++"] fail (actual output: `" ++ show h' ++ "`)")
 
 testPost :: (Show a, Show b) => (a -> b) -> (b -> Bool) -> IO a -> IO ()
 testPost f p = testR 1 numTests f (\_ -> p)
