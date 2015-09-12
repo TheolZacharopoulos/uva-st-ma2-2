@@ -80,7 +80,6 @@ random non-numeric character.
 allIbanTests :: IO ()
 allIbanTests = sequence_ [testGoodIban, testBadIban]
 
-
 goodIbanCase :: IO String
 goodIbanCase = do
     i <- randomRIO (0, length goodIbans - 1)
