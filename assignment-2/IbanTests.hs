@@ -6,6 +6,7 @@ import Data.Char
 import Iban
 import Lecture2Test
 import ListHelper
+import RandomHelper
 import StringHelper
 
 {-
@@ -132,11 +133,6 @@ substituteCheckDigit i iban = do
     a <- randomElement alpha
     return $ rotate (-i) $ replaceHead a $ rotate i iban
 
-randomElement :: [a] -> IO a
-randomElement xs = do
-    i <- randomRIO (0, length xs - 1)
-    return $ xs !! i
-    
 goodIbans :: [String]
 goodIbans = ["AL47 2121 1009 0000 0002 3569 8741"
             ,"AD12 0001 2030 2003 5910 0100"
