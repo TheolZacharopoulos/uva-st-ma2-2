@@ -7,3 +7,6 @@ import IbanTests (testAllIbans)
 
 testAll :: IO ()
 testAll = sequence_ [testAllTriangles, testAllDerangement, testAllPermutation, testAllIbans]
+
+adInfinitum :: IO () -> IO ()
+adInfinitum = sequence_ . repeat

@@ -2,22 +2,8 @@ module Iban where
 
 import Data.Char
 import Data.List
-
-removeNonAlphaNum :: String -> String
-removeNonAlphaNum = flip intersect (['a'..'z']++['A'..'Z']++['0'..'9'])
-
-getCodeChar :: Char -> Int
-getCodeChar c = (ord c - ord 'a') + 10
-
-toLowerCase :: String -> String
-toLowerCase = map toLower
-
--- rotate 4 "ABCDEFG" = "EFGABCD"
--- rotate (-2) "ABCDEFG" = "FGABCDE"
-rotate :: Int -> [a] -> [a]
-rotate x l =  (iterate f l) !! (x `mod` length l)
-  where f []     = []
-        f (x':xs) = xs ++ [x']
+import ListHelper
+import StringHelper
 
 -- perform step 2 of chapter 6.1 of the spec
 toNumber :: String -> Integer
@@ -36,15 +22,6 @@ iban xs = if length xs' < 4
                then False
                else (== 1) $ (`mod` 97) $ toNumber $ rotate 4 $ toLowerCase xs'
     where xs' = removeNonAlphaNum xs
-
-alpha :: String
-alpha = ['A'..'Z']++['a'..'z']
-
-num :: String
-num = ['0'..'9']
-
-alphaNum :: String
-alphaNum = num++alpha
 
 iso3166 :: [String]
 iso3166 = ["AF"

@@ -1,10 +1,12 @@
 module IbanTests where
 
-import Lecture2Test
-import Iban
 import System.Random
 import Data.Char
-import Data.List
+
+import Iban
+import Lecture2Test
+import ListHelper
+import StringHelper
 
 {-
 IBAN specification: http://www.europeanpaymentscouncil.eu/documents/ECBS%20IBAN%20standard%20EBS204_V3.2.pdf
@@ -109,10 +111,6 @@ incrementDigit n l = rotate (-n') $ incrementHead $ rotate n' l
           incrementHead xs = replaceHead
                                 (flip (!!) 0 $ show $ (`mod` 10) $ (+1) $ read [head xs])
                                 xs
-
-replaceHead :: a -> [a] -> [a]
-replaceHead _ []     = []
-replaceHead y (_:ys) = y:ys
 
 takeLt4Characters :: String -> IO String
 takeLt4Characters iban = do

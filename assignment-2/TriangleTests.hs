@@ -1,11 +1,12 @@
 module TriangleTests where
 
-import Lecture2Test
-import Triangle
-
 import Data.List
 import Data.Maybe
 import System.Random
+
+import Lecture2Test
+import RandomHelper
+import Triangle
 
 type Triple a = (a,a,a)
 
@@ -14,26 +15,12 @@ limit = 10000
 
 -- Helper function
 -- Shuffles the arguments a,b,c for randomizing the function input order.
-shuffle :: IO (Triple Integer) -> IO (Triple Integer)
-shuffle gen = do
+shuffleTriple :: IO (Triple Integer) -> IO (Triple Integer)
+shuffleTriple gen = do
     (a,b,c) <- gen
     rndIndex <- randomRIO (0, 5)
     abc      <- return $ permutations [a,b,c] !! rndIndex
     return (abc !! 0, abc !! 1, abc !! 2)
-
--- Helper function
--- Generates a random Integer between `lower` and `upper` limit, excluding a list of integers `exclusions`
-randomRangeWithExclusions :: Integer -> Integer -> [Integer] -> IO (Maybe Integer)
-randomRangeWithExclusions lower upper exclusions | upper < lower = return Nothing
-                                                 | otherwise     = 
-    if ((upper - lower) <= (toInteger $ length exclusions) &&
-        ((sort exclusions) == [lower .. upper]))
-    then return Nothing
-    else do
-        x <- randomRIO (lower, upper)
-        if x `elem` exclusions
-        then randomRangeWithExclusions lower upper exclusions
-        else return (Just x)
 
 -- Helper function
 -- Checks the validity of a triangle according to the theory.
@@ -110,7 +97,7 @@ isoscelesCase = do
 rectangularCase :: IO (Triple Integer)
 rectangularCase = do
     x <- randomRIO (0, length allRectangularCases - 1)
-    shuffle (return $ allRectangularCases !! x)
+    shuffleTriple (return $ allRectangularCases !! x)
 
 -- This function generates a case that is not consist of any other above cases (other).
 otherCase :: IO (Triple Integer)
