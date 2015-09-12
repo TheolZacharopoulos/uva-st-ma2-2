@@ -65,7 +65,7 @@ curriedTriangle :: Triple Integer -> Shape
 curriedTriangle (a,b,c) = triangle a b c
 
 -- This function generates a negative or zero input case.
--- A triangle which has at least one side which is equal or less tha 0 is not a triangle.
+-- A triangle which has at least one side that is equal or less than 0 is not a triangle.
 negativeOrZeroSideCase :: IO (Triple Integer)
 negativeOrZeroSideCase = do
     a <- randomRIO (-10, 0)

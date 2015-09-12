@@ -163,3 +163,15 @@ testSymmetricDerangementCase =
         (== True) 
         derangementCase
 
+-- A list with all the tests.
+allDerangementTests = [
+    testDifferentLengthCase,
+    testDerangementCase,
+    testDifferentElementsCase,
+    testSamePositionElements,
+    testSymmetricDerangementCase
+    ]
+
+-- Execute all the triangle tests.
+testAllDerangement :: IO [()]
+testAllDerangement = sequence allDerangementTests
