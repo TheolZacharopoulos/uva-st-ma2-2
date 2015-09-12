@@ -83,7 +83,7 @@ differentLengthCase = do
     shuffledL1 <- shuffle l1  
     return  (l1, take (fromIntegral length2) shuffledL1)
 
--- This function generates two lists which one is permutation of the other.
+-- This function generates two lists of which one is a permutation of the other.
 -- Case for 1 of the postcondition:
 -- Lists containing the same elements and of the same length are permutations of each other.
 permutationCase :: IO ([Integer], [Integer])
