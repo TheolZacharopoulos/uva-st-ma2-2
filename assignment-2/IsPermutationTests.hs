@@ -1,4 +1,4 @@
-module PermutationTests where
+module IsPermutationTests where
 
 import IsPermutation
 import Lecture2Test
@@ -22,9 +22,9 @@ limit :: Integer
 limit = 10
 
 -- Helper function
--- Curies the isPermutation function.
-curriedIsPermutation :: Eq a => ([a], [a]) -> Bool
-curriedIsPermutation (l1, l2) = isPermutation l1 l2
+-- Uncuries the isPermutation function.
+unCurriedIsPermutation :: Eq a => ([a], [a]) -> Bool
+unCurriedIsPermutation (l1, l2) = isPermutation l1 l2
 
 -- Helper function
 -- Randomly shuffles a list.
@@ -113,14 +113,14 @@ differentElementsCase = do
 -- Expectation: 'False'
 testDifferentLengthCase :: IO ()
 testDifferentLengthCase = 
-    testPost curriedIsPermutation (== False) differentLengthCase
+    testPost unCurriedIsPermutation (== False) differentLengthCase
 
 -- Test the permutation lists, case.
 -- Input: two lists which one is the permutation of the other.
 -- Expectation: 'True'
 testPermutationCase :: IO ()
 testPermutationCase = 
-    testPost curriedIsPermutation (== True) permutationCase 
+    testPost unCurriedIsPermutation (== True) permutationCase 
 
 -- Test the different elements lists, case.
 -- Input: two lists which one has (at least one) different 
@@ -128,7 +128,7 @@ testPermutationCase =
 -- Expectation: 'False'
 testDifferentElementsCase :: IO ()
 testDifferentElementsCase = 
-    testPost curriedIsPermutation (== False) differentElementsCase
+    testPost unCurriedIsPermutation (== False) differentElementsCase
 
 
 -- Test if the reverse is also a permutation:
@@ -140,3 +140,15 @@ testReversePermutationCase =
         (\(a, b) -> (isPermutation a b) && (isPermutation b a))
         (== True) 
         permutationCase
+
+-- A list with all the tests.
+allPermutationTests = [
+    testDifferentLengthCase,
+    testPermutationCase,
+    testDifferentElementsCase,
+    testReversePermutationCase
+    ]
+
+-- Execute all the tests.
+testAllPermutation :: IO ()
+testAllPermutation = sequence_ allPermutationTests

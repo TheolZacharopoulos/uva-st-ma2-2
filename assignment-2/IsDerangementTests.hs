@@ -1,4 +1,4 @@
-module DerangementTests where
+module IsDerangementTests where
 
 import IsDerangement
 import Lecture2Test
@@ -172,6 +172,6 @@ allDerangementTests = [
     testSymmetricDerangementCase
     ]
 
--- Execute all the triangle tests.
-testAllDerangement :: IO [()]
-testAllDerangement = sequence allDerangementTests
+-- Execute all the tests.
+testAllDerangement :: IO ()
+testAllDerangement = sequence_ allDerangementTests

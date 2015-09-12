@@ -60,9 +60,9 @@ isRectangularCase (a,b,c) = c'^2 == a'^2 + b'^2
     where [a',b',c'] = sort [a,b,c]
 
 -- Helper function
--- Curies a triangle.
-curriedTriangle :: Triple Integer -> Shape
-curriedTriangle (a,b,c) = triangle a b c
+-- Uncuries a triangle.
+unCurriedTriangle :: Triple Integer -> Shape
+unCurriedTriangle (a,b,c) = triangle a b c
 
 -- This function generates a negative or zero input case.
 -- A triangle which has at least one side that is equal or less than 0 is not a triangle.
@@ -117,42 +117,42 @@ otherCase = do
 -- Expectation: 'NoTriangle'.
 testNegativeOrZeroSideCase :: IO ()
 testNegativeOrZeroSideCase =
-    testPost curriedTriangle (== NoTriangle) negativeOrZeroSideCase
+    testPost unCurriedTriangle (== NoTriangle) negativeOrZeroSideCase
 
 -- Test the long side case.
 -- Input: one of the arguments is bigger than the sum of the other two (invalid triangle).
 -- Expectation: 'NoTriangle'.
 testLongSideCase :: IO ()
 testLongSideCase =
-    testPost curriedTriangle (== NoTriangle) longSideCase
+    testPost unCurriedTriangle (== NoTriangle) longSideCase
 
 -- Test the equilateral triangle case.
 -- Input: every argument is the same (equilateral triangle).
 -- Expectation: 'Equilateral'
 testEquilateralCase :: IO ()
 testEquilateralCase =
-    testPost curriedTriangle (== Equilateral) equilateralCase
+    testPost unCurriedTriangle (== Equilateral) equilateralCase
 
 -- Test the rectangular triangle case.
 -- Input: a valid rectangular triangle.
 -- Expectation: 'Rectangular'
 testRectangularCase :: IO ()
 testRectangularCase =
-    testPost curriedTriangle (== Rectangular) rectangularCase
+    testPost unCurriedTriangle (== Rectangular) rectangularCase
 
 -- Test the isosceles triangle case.
 -- Input: 2 arguments are the same, the 3rd is different (isosceles triangle).
 -- Expectation: 'Isosceles'
 testIsoscelesCase :: IO ()
 testIsoscelesCase =
-    testPost curriedTriangle (== Isosceles) isoscelesCase
+    testPost unCurriedTriangle (== Isosceles) isoscelesCase
 
 -- Test the other case.
 -- Input: a random generated other case, which it's not consists of any of the previous cases.
 -- Expectation: 'Other'
 testOtherCase :: IO ()
 testOtherCase =
-    testPost curriedTriangle (== Other) otherCase
+    testPost unCurriedTriangle (== Other) otherCase
 
 -- A list with all the tests.
 allTriangleTests = [
@@ -164,5 +164,5 @@ allTriangleTests = [
     testOtherCase]
 
 -- Execute all the triangle tests.
-testAllTriangles :: IO [()]
-testAllTriangles = sequence allTriangleTests
+testAllTriangles :: IO ()
+testAllTriangles = sequence_ allTriangleTests
