@@ -4,6 +4,7 @@ import Lecture2Test
 import Triangle
 
 import Data.List
+import Data.Maybe
 import System.Random
 
 type Triple a = (a,a,a)
@@ -22,19 +23,17 @@ shuffle gen = do
 
 -- Helper function
 -- Generates a random Integer between `lower` and `upper` limit, excluding a list of integers `exclusions`
-randomRangeWithExclusions :: Integer -> Integer -> [Integer] -> IO Integer
-randomRangeWithExclusions lower upper exclusions = do
-    if upper < lower then do
-        error "Upper boundary is lower than lower boundary."
+randomRangeWithExclusions :: Integer -> Integer -> [Integer] -> IO (Maybe Integer)
+randomRangeWithExclusions lower upper exclusions | upper < lower = return Nothing
+                                                 | otherwise     = 
+    if ((upper - lower) <= (toInteger $ length exclusions) &&
+        ((sort exclusions) == [lower .. upper]))
+    then return Nothing
     else do
-        if ((upper - lower) <= (toInteger $ length exclusions) &&
-            ((sort exclusions) == [lower .. upper])) then do
-        error "Exclusions covers the entire range of numbers"
-        else do
-            x <- randomRIO (lower, upper)
-            if length (intersect [x] exclusions) == 1
-                then randomRangeWithExclusions lower upper exclusions
-            else return x
+        x <- randomRIO (lower, upper)
+        if x `elem` exclusions
+        then randomRangeWithExclusions lower upper exclusions
+        else return (Just x)
 
 -- Helper function
 -- Checks the validity of a triangle according to the theory.
@@ -102,7 +101,9 @@ isoscelesCase :: IO (Triple Integer)
 isoscelesCase = do
     ab <- randomRIO (1, limit)
     c  <- randomRangeWithExclusions 1 (2*ab-1) [ab]
-    return (ab, ab, c)
+    if isJust c
+    then return (ab, ab, fromJust c)
+    else isoscelesCase
 
 -- This function generates a case which consist of a valid rectangular triangle (rectangular triangle).
 -- Uses the helper functions to generate a valid rectangular case.
@@ -116,8 +117,18 @@ otherCase :: IO (Triple Integer)
 otherCase = do
     a <- randomRIO (1, limit)
     b <- randomRangeWithExclusions 1 limit [a]
-    c <- randomRangeWithExclusions 1 (a+b-1) [a,b]
-    if isRectangularCase (a,b,c) || not (isAValidTriangle (a,b,c)) then otherCase else return (a,b,c)
+    if isNothing b
+    then otherCase
+    else do
+        b' <- return $ fromJust b
+        c <- randomRangeWithExclusions 1 (a+b'-1) [a,b']
+        if isNothing c
+        then otherCase
+        else do
+            c' <- return $ fromJust c
+            if isRectangularCase (a,b',c') || not (isAValidTriangle (a,b',c'))
+            then otherCase
+            else return (a,b',c')
 
 -- Test the negative or zero case.
 -- Input: one of the arguments as zero or negative (invalid triangle).
