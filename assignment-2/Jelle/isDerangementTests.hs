@@ -53,6 +53,11 @@ getRandomListWithExclusions x exclusions = do
 curriedIsDerangement :: Eq a => ([a], [a]) -> Bool
 curriedIsDerangement (xs, ys) = isDerangement xs ys
 
+samePositionElementsCase :: IO ([Integer], [Integer])
+samePositionElementsCase = do
+    n <- randomRIO (1, limit)
+    l <- getRandomList n
+    return (l, l)
 
 differentLengthCase :: IO ([Integer], [Integer])
 differentLengthCase = do
@@ -95,3 +100,18 @@ testDerangementCase =
 testDifferentElementsCase :: IO ()
 testDifferentElementsCase = 
     testPost curriedIsDerangement (== False) differentElementsCase
+
+testSamePositionElements :: IO()
+testSamePositionElements =
+    testPost curriedIsDerangement (== False) samePositionElementsCase
+
+-- Test if the reverse is also a derangment:
+-- i.e. if a is a derangement of b, then b is a derangement of a.
+-- Expectation: 'True'
+testSymmetricDerangementCase :: IO()
+testSymmetricDerangementCase =
+    testPost 
+        (\(a, b) -> (isDerangement a b) && (isDerangement b a))
+        (== True) 
+        derangementCase
+
