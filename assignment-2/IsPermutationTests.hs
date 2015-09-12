@@ -54,8 +54,7 @@ randomRangeWithExclusions lower upper exclusions = do
       else return x
 
 -- Helper function
--- Generates a random list of n Integers
--- excluding a list of integers `exclusions`
+-- Generates a random list of n Integers excluding a list of integers `exclusions`
 getRandomListWithExclusions :: Integer -> [Integer] -> IO [Integer]
 getRandomListWithExclusions 0 _ = return []
 getRandomListWithExclusions n exclusions = do
@@ -73,14 +72,9 @@ getRandomList x = do
     l <- getRandomList (x - 1)
     return $ r : l
 
--- TODO #NeverForgetTijs!
 -- This function generates two random lists with different lengths.
--- Generates a random number as the length of the first list, then generates
--- a second random number that is smaller than length of the first.
--- At last it creates the two random lists and returns the two lists with random order.
-
 -- Case for 1 of the postconditions:
--- Lists of a different length are not permutations of each other 
+-- Lists of a different length are not permutations of each other.
 differentLengthCase :: IO ([Integer], [Integer])
 differentLengthCase = do
     length1 <- randomRIO (1, limit)
@@ -89,15 +83,9 @@ differentLengthCase = do
     shuffledL1 <- shuffle l1  
     return  (l1, take (fromIntegral length2) shuffledL1)
 
-
--- TODO #NeverForgetTijs!
 -- This function generates two lists which one is permutation of the other.
--- Generates a random number as the length of the list, then generates a random list
--- of this length, for the second list it suffles the first list (permutation) and returns the 2 lists.
-
 -- Case for 1 of the postcondition:
--- Lists containing the same elements and of the same length are permutations
--- of each other.
+-- Lists containing the same elements and of the same length are permutations of each other.
 permutationCase :: IO ([Integer], [Integer])
 permutationCase = do
     length1 <- randomRIO(1, limit)
@@ -105,11 +93,7 @@ permutationCase = do
     l2 <- shuffle l1
     return (l1, l2)
 
--- TODO #NeverForgetTijs!
 -- This function generates two lists which one has different elements than the other.
--- Generates a random number as the length of the list, then generates a random list
--- of this length, for the second list includes elements other than those of the first.
-
 -- Case for 1 of the postconditions:
 -- Lists containing different elements are not permutations of each other.
 differentElementsCase :: IO ([Integer], [Integer])
@@ -156,4 +140,3 @@ testReversePermutationCase =
         (\(a, b) -> (isPermutation a b) && (isPermutation b a))
         (== True) 
         permutationCase
-
