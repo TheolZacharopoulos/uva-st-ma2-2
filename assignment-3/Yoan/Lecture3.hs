@@ -139,13 +139,3 @@ showLst [] = ""
 showLst (f:fs) = show f ++ showRest fs
 showRest [] = ""
 showRest (f:fs) = ' ': show f ++ showRest fs
-
-contradiction :: Form -> Bool
-
-tautology :: Form -> Bool
-
--- | logical entailment
-entails :: Form -> Form -> Bool
-
- -- | logical equivalence
-equiv :: Form -> Form -> Bool
