@@ -1,3 +1,138 @@
+module IbanTests where
+
+import System.Random
+import Data.Char
+
+import Iban
+import Lecture2Test
+import ListHelper
+import RandomHelper
+import StringHelper
+
+{-
+IBAN specification: http://www.europeanpaymentscouncil.eu/documents/ECBS%20IBAN%20standard%20EBS204_V3.2.pdf
+
+The IBAN specification says that validation of an IBAN account identifier is
+performed by check digits. These digits are present in every identifier on the
+third and fourth place of the string.
+
+The algorithm for validation by check digits is pretty simple, some
+elementary string transformation operations are performed to convert the
+IBAN string into a large integer and the resulting integer should be congruent
+to 1 (mod 97).
+
+This is our first requirement:
+
+1. After the elementary string transformation operations are performed as
+described in chapter 6.1 of the specification the resulting integer should
+be congruent to 1 (mod 97).
+
+However, the fact that these elementary string operations succeed followed
+by the validation that the resulting number is congruent to 1 (mod 97)
+does not in itself prove that a given string is a valid IBAN identifier,
+for instance, the string:
+
+"9798 9797"
+
+is valid according to the procedure but it is not a valid IBAN identifier
+because it does not begin with an ISO country code. So is the string:
+
+"98"
+
+even though it only consists of the check digits.
+
+So in addition our validation procedure should validate that:
+
+2. The first two alphanumeric characters constitute a valid ISO country code.
+3. The third and fourth alphanumeric characters are digits.
+
+The above 2 requirements also imply that the procedure should validate that:
+
+4. The number of alphanumeric characters in the string is at least 4.
+
+Further validation looks difficult because it would require validating that what
+follows the first 4 characters is a valid local bank account identifier.
+The formats of these local bank account identifiers are unknown to us.
+
+We use a known list of good identifiers to test that our validation
+procedure succesfully validates some good ones:
+http://www.rbs.co.uk/corporate/international/g0/guide-to-international-business/regulatory-information/iban/iban-example.ashx
+
+The test case for this is called `testGoodIban`.
+
+The other test case `testBadIban` chooses randomly among one of the
+following cases:
+
+1. Take a known good IBAN identifier and increment the second check digit
+(mod 10), resulting in an incongruence to 1 (mod 97).
+
+2. Take between 1 and 3 (inclusive) alphanumeric characters from the front of a
+known good IBAN identifier.
+
+3. Take a known good IBAN identifier and substitute the first two alphanumeric
+characters with two random alphanumeric characters that do not form a valid ISO
+country code.
+
+4. Take a known good IBAN identifier and substitute the third digit with a
+random non-numeric character.
+
+5. Take a known good IBAN identifier and substitute the fourth digit with a
+random non-numeric character.
+-}
+
+testAllIbans :: IO ()
+testAllIbans = sequence_ [testGoodIban, testBadIban]
+
+goodIbanCase :: IO String
+goodIbanCase = do
+    i <- randomRIO (0, length goodIbans - 1)
+    return $ goodIbans !! i
+
+testGoodIban :: IO ()
+testGoodIban = testPost iban id goodIbanCase
+
+badIbanCase :: IO String
+badIbanCase = do
+    testCase <- randomRIO (0, 4) :: IO Int
+    iban <- goodIbanCase
+    case testCase of
+        0 -> return $ incrementDigit 3 iban
+        1 -> takeLt4Characters iban 
+        2 -> substituteCountryCode iban
+        3 -> substituteCheckDigit 2 iban
+        4 -> substituteCheckDigit 3 iban
+
+testBadIban :: IO ()
+testBadIban = testPost iban not badIbanCase
+
+-- n is zero-based, can be negative
+incrementDigit :: Int -> String -> String
+incrementDigit n l = rotate (-n') $ incrementHead $ rotate n' l
+    where n'               = n `mod` length l
+          incrementHead xs = replaceHead
+                                (flip (!!) 0 $ show $ (`mod` 10) $ (+1) $ read [head xs])
+                                xs
+
+takeLt4Characters :: String -> IO String
+takeLt4Characters iban = do
+    n <- randomRIO (1, 3)
+    return $ take n $ removeNonAlphaNum iban
+
+substituteCountryCode :: String -> IO String
+substituteCountryCode iban = do
+    x <- randomElement alphaNum
+    y <- randomElement alphaNum
+    if not (elem [toUpper x, toUpper y] iso3166)
+    then return $ replaceHead (toUpper x) $ rotate (-1) 
+                $ replaceHead (toUpper y) $ rotate 1
+                $ removeNonAlphaNum iban
+    else substituteCountryCode iban
+
+substituteCheckDigit :: Int -> String -> IO String
+substituteCheckDigit i iban = do
+    a <- randomElement alpha
+    return $ rotate (-i) $ replaceHead a $ rotate i iban
+
 goodIbans :: [String]
 goodIbans = ["AL47 2121 1009 0000 0002 3569 8741"
             ,"AD12 0001 2030 2003 5910 0100"
@@ -55,5 +190,4 @@ goodIbans = ["AL47 2121 1009 0000 0002 3569 8741"
             ,"CH93 0076 2011 6238 5295 7"
             ,"TN59 1000 6035 1835 9847 8831"
             ,"TR33 0006 1005 1978 6457 8413 26"
-            ,"AE07 0331 2345 6789 0123 456"
-            ,"GB29 RBOS 6016 1331 9268 19"]
+            ,"AE07 0331 2345 6789 0123 456"]
