@@ -1,8 +1,7 @@
-module Lab3 where
+module Lecture3 where
 
 import Data.List
 import Data.Char
-import System.Random
 
 type Name = Int
 data Form = Prop Name
