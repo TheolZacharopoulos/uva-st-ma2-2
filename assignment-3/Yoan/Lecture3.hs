@@ -45,6 +45,12 @@ allVals = genVals . propNames
 
 type ValFct = Name -> Bool
 
+update :: Eq a => (a -> b) -> (a,b) -> a -> b
+update f (x,y) = \ z -> if x == z then y else f z
+
+updates :: Eq a => (a -> b) -> [(a,b)] -> a -> b
+updates = foldl update
+
 val2fct :: Valuation -> ValFct
 val2fct = updates (\ _ -> undefined)
 fct2val :: [Name] -> ValFct -> Valuation
