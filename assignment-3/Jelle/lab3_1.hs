@@ -1,11 +1,8 @@
 module Lab3_1 where
 import Lecture3
 
-satisfiable :: Form -> Bool
-satisfiable f = any (\ v -> evl v f) (allVals f)
-
 contradiction :: Form -> Bool
-contradiction f = not $ any (\ v -> evl v f) (allVals f)
+contradiction = not . satisfiable
 
 tautology :: Form -> Bool
 tautology f = all (\ v -> evl v f) (allVals f)
