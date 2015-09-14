@@ -1,4 +1,4 @@
-module One where
+module FormulaGenerator (randomForm) where
 
 import Lecture3
 
