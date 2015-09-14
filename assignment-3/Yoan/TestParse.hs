@@ -29,8 +29,19 @@ genForm generated depth = do
     if depth == depthLimit then return generated
     else (genForm (getForm formType a generated) (depth + 1))
 
-generateFullForm :: IO Form
-generateFullForm = do
+stringify :: IO Form -> IO String
+stringify form = do
+    form' <- form
+    return (show form')
+
+testParse :: IO Form -> IO Bool
+testParse form = do
+    expected <- form
+    stringified <- stringify form
+    return (equiv expected (head(parse (show expected))))
+
+satisfiableFormCase :: IO Form
+satisfiableFormCase = do
     startForm <- genName
     genForm startForm 1
 
@@ -38,3 +49,4 @@ testSatisfiable :: IO Form -> IO Bool
 testSatisfiable form = do
     form' <- form
     return (satisfiable form')
+
