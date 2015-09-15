@@ -71,7 +71,7 @@ flatten (Dsj fs) = Dsj (map flatten (flattenDsjBody fs))
         flattenDsjBody :: [Form] -> [Form]
         flattenDsjBody = concatMap flattenDsj
 
--- Takes a flattened, arrowfree and negation normal form Form.
+-- Takes a flattened, arrowfree, negation normal form, and legal Form.
 -- Returns an equivalent form in conjunction normal form.
 -- Note! The result is not flattened.
 cnfr :: Form -> Form
@@ -99,8 +99,11 @@ cnfr (Dsj fs) =
         -- Returns the result in a list.
         mergeCnj :: Form -> [Form] -> [Form]
         mergeCnj _ [] = []
-        mergeCnj c@(Cnj fs1) (f:fs2) = applyDistrProp f fs1 ++ (mergeCnj c fs2)
-
+        mergeCnj c@(Cnj fs1) (f:fs2) = newCBody ++ (mergeCnj newC fs2)
+            where 
+                newCBody = applyDistrProp f fs1
+                newC = Cnj newCBody
+                
         -- Takes a form, and a list of forms which represents the body of a conjunction.
         -- Applies the distributive property.
         applyDistrProp :: Form -> [Form] -> [Form]
