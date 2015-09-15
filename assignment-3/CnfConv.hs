@@ -3,11 +3,14 @@ module CnfConv (cnf, isCnf) where
 import Lecture3
 import Data.List ((\\))
 
+tautologyForm = (Dsj [Prop 1, (Neg $ Prop 1)])
+contradictionForm = (Cnj [Prop 1, (Neg $ Prop 1)])
+
 -- Converts any Form into Conjuctive Normal Form
 -- Sidenote: the finaly application of flatten only serves to make the output
 -- more understandable (prettier).
 cnf :: Form -> Form
-cnf = (flatten . cnfr . flatten . nnf . arrowfree)
+cnf = (flatten . cnfr . flatten . nnf . filterIllegalForm . arrowfree)
 
 -- Check that a formula is in CNF form
 isCnf :: Form -> Bool
@@ -22,6 +25,20 @@ isCnfLit :: Form -> Bool
 isCnfLit (Prop _)       = True
 isCnfLit (Neg (Prop _)) = True
 isCnfLit _              = False
+
+
+-- Takes an arrowfree Form.
+-- Returns a Form without singular or empty (disjunctions or conjunctions).
+filterIllegalForm :: Form -> Form
+filterIllegalForm (Prop x) = Prop x
+filterIllegalForm (Neg f) = Neg (filterIllegalForm f)
+filterIllegalForm (Cnj []) = tautologyForm
+filterIllegalForm (Cnj [f]) = filterIllegalForm f
+filterIllegalForm (Cnj fs) = Cnj $ map filterIllegalForm fs
+filterIllegalForm (Dsj []) = contradictionForm
+filterIllegalForm (Dsj [f]) = filterIllegalForm f
+filterIllegalForm (Dsj fs) = Dsj $ map filterIllegalForm fs
+
 
 -- Flattens any arrowfree Form
 -- Merges nested conjunctions and disjunctions in one disjunction or
