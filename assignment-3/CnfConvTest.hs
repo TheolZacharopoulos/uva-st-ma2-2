@@ -25,14 +25,17 @@ unCurriedIsCnfConv :: Form -> Bool
 unCurriedIsCnfConv form = isCnf converted && equiv converted form
     where converted = cnf form
 
+-- Checks that a formula converted to CNF is equivalent to the original
 testCnf :: IO ()
 testCnf =
-    testPost unCurriedIsCnfConv (== True) randomFormCase
+    testPost unCurriedIsCnfConv id randomFormCase
 
+-- Checks that isCnf is True for known CNF formulas
 testIsCnfGood :: IO ()
 testIsCnfGood =
     testPost isCnf id randomGoodCnfCase
 
+-- Check that isCnf is False for known non-CNF formulas
 testIsCnfBad :: IO ()
 testIsCnfBad =
     testPost isCnf not randomBadCnfCase
