@@ -7,7 +7,7 @@ import Lecture3
 import Lab3_1
 import Lecture2Test
 
--- Preconditions:
+-- Preconditions: We do not have any preconditions
 
 -- Postconditions:
 -- Returns true if:
