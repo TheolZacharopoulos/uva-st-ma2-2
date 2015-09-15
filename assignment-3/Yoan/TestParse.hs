@@ -5,6 +5,7 @@ import Data.Char
 import Data.List
 import Lecture3
 import LogicalDefinitions
+import Lecture2Test
 
 depthLimit :: Integer
 depthLimit = 10
@@ -34,19 +35,15 @@ stringify form = do
     form' <- form
     return (show form')
 
-testParse :: IO Form -> IO Bool
-testParse form = do
-    expected <- form
-    stringified <- stringify form
-    return (equiv expected (head(parse (show expected))))
+unCurriedParse :: Form -> Bool
+unCurriedParse form = equiv form actual
+    where actual = (head(parse (show form)))
 
 satisfiableFormCase :: IO Form
 satisfiableFormCase = do
     startForm <- genName
     genForm startForm 1
 
-testSatisfiable :: IO Form -> IO Bool
-testSatisfiable form = do
-    form' <- form
-    return (satisfiable form')
-
+testParseCase :: IO ()
+testParseCase =
+    testPost unCurriedParse (== True) satisfiableFormCase
