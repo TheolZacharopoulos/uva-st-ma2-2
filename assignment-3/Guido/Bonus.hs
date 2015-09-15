@@ -1,4 +1,4 @@
-module Bonus (cnf2cls) where
+module Bonus (Clause, Clauses, cnf2cls) where
 
 import Lecture3
 
