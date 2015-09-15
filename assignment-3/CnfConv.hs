@@ -98,8 +98,7 @@ cnfr (Dsj fs) =
         -- Applies the distributive property to every form in the list with the conjunction,
         -- Returns the result in a list.
         mergeCnj :: Form -> [Form] -> [Form]
-        mergeCnj _ [] = []
-        mergeCnj _ [f] = [f]
+        mergeCnj c [] = [c]
         mergeCnj c@(Cnj fs1) (f:fs2) = (mergeCnj newC fs2)
             where 
                 newCBody = applyDistrProp f fs1
