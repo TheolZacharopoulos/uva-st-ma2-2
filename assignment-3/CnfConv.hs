@@ -82,7 +82,7 @@ cnfr (Dsj fs) =
     if length cnj == 0 then
         Dsj (map cnfr fs)
     else
-        Cnj (map cnfr (mergeCnj (cnj !! 0) others))
+        cnfr $ Cnj (mergeCnj (cnj !! 0) others)
     where 
         -- Takes a list of forms, returns the first occurance of a conjunction in a list.
         -- If the list of forms has no conjunction, returns empty list.
