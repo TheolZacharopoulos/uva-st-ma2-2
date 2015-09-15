@@ -82,7 +82,7 @@ cnfr (Dsj fs) =
     if length cnj == 0 then
         Dsj (map cnfr fs)
     else
-        cnfr $ Cnj (mergeCnj (cnj !! 0) others)
+        (cnfr . flatten) (mergeCnj (cnj !! 0) others)
     where 
         -- Takes a list of forms, returns the first occurance of a conjunction in a list.
         -- If the list of forms has no conjunction, returns empty list.
@@ -97,8 +97,8 @@ cnfr (Dsj fs) =
         -- Takes a Conjunction and a list of Forms, 
         -- Applies the distributive property to every form in the list with the conjunction,
         -- Returns the result in a list.
-        mergeCnj :: Form -> [Form] -> [Form]
-        mergeCnj c [] = [c]
+        mergeCnj :: Form -> [Form] -> Form
+        mergeCnj c [] = c
         mergeCnj c@(Cnj fs1) (f:fs2) = (mergeCnj newC fs2)
             where 
                 newCBody = applyDistrProp f fs1
