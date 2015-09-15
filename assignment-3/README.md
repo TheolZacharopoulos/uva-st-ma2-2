@@ -9,3 +9,8 @@
 - ParseTest: **2**-hours.
 - CnfConverter: **5**-hours.
 - Bonus: **1**-hours.
+
+# TODO
+- Write Test reports.
+- Refactor CNF.
+- Finish up bonus.
