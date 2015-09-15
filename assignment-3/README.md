@@ -1,7 +1,7 @@
 # Assignment 3
 
 ## Test reports
-**TODO**
+*The test reports have been written as comments in the test files.*
 
 ## Time spend
 - Lab3_1: **5**-hours.

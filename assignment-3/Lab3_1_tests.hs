@@ -30,3 +30,5 @@ testEquiv =
     not (equiv tautologyForm contradictionForm) &&
     not (equiv contradictionForm tautologyForm) &&
     (equiv contradictionForm contradictionForm)
+
+testAllLab3_1

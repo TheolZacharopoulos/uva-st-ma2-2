@@ -8,6 +8,13 @@ import Lab3_1
 import Lecture2Test
 import FormulaGenerator
 
+-- Preconditions: We do not have any preconditions
+
+-- Postconditions:
+-- Returns true iff:
+--      Originally generated formula and its stringified and then parsed version be equivalent
+
+
 -- Name range to be used when generating formulas
 formulaGeneratorRange :: (Name, Name)
 formulaGeneratorRange = (1, 15)
