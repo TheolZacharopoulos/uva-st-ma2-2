@@ -13,7 +13,7 @@ testAllLab3_1 = do
         testResult = if allTests then "Passed!" else "Failed!"
 
 testAll :: IO ()
-testAll = sequence_ [testParseCase, TestBonus.testCnf, testAllLab3_1, CnfConvTest.testCnf]
+testAll = sequence_ [testParseCase, TestBonus.testCnf, testAllLab3_1, CnfConvTest.testCnf, testIsCnfBad, testIsCnfGood]
 
 adInfinitum :: IO () -> IO ()
 adInfinitum = sequence_ . repeat
