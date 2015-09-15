@@ -6,16 +6,25 @@ import Bonus
 import Lecture2Test
 import Lecture3
 
+-- Preconditions for cnf2cls : Form is in CNF
+
+{- We test the cnf2cls function by giving it a reasonably complete list of
+ - valid CNF formulas.
+ -}
+
 testCnf :: IO ()
 testCnf = Lecture2Test.testRel cnf2cls verifyCnf randomCnf
 
+-- Get a random good CNF formula
 randomCnf :: IO Form
 randomCnf = do
     i <- randomRIO (0, length goodCnfs - 1)
     return $ fst $ goodCnfs !! i
 
+-- Verifies that the generated Clauses is correct for the input Form by
+-- checking the occurrence in the list of goodCnfs
 verifyCnf :: Form -> Clauses -> Bool
-verifyCnf f c = all id $ map (\(f',c') -> f /= f' || c == c') goodCnfs
+verifyCnf f c = all (\(f',c') -> f /= f' || c == c') goodCnfs
 
 goodCnfs :: [(Form, Clauses)]
 goodCnfs =
