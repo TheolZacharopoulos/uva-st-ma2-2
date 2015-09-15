@@ -1,4 +1,4 @@
-module Lab3_3 where
+module CnfConv where
 import Lecture3
 import Data.List ((\\))
 
