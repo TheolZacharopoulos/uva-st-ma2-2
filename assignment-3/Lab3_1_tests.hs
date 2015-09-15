@@ -1,4 +1,6 @@
 module Lab3_1_tests where
+
+import Lecture3
 import Lab3_1
 
 tautologyForm = (Dsj [p, (Neg p)])
