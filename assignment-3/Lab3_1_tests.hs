@@ -31,4 +31,9 @@ testEquiv =
     not (equiv contradictionForm tautologyForm) &&
     (equiv contradictionForm contradictionForm)
 
-testAllLab3_1
+testAllLab3_1 :: IO ()
+testAllLab3_1 = do
+    print ("Testing contradiction, tautology, entails, equivalence... " ++ testResult)
+    where
+        allTests = all (== True) [testContradiction, testTautology, testTautology, testEntails, testEquiv]
+        testResult = if allTests then "Passed!" else "Failed!"
