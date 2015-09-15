@@ -10,7 +10,8 @@ contradictionForm = (Cnj [Prop 1, (Neg $ Prop 1)])
 -- Sidenote: the finaly application of flatten only serves to make the output
 -- more understandable (prettier).
 cnf :: Form -> Form
-cnf = (flatten . cnfr . flatten . nnf . filterIllegalForm . arrowfree)
+cnf = until (\f -> (flatten.cnfr) f == f) (flatten.cnfr)
+    . flatten . nnf . filterIllegalForm . arrowfree
 
 -- Check that a formula is in CNF form
 isCnf :: Form -> Bool
