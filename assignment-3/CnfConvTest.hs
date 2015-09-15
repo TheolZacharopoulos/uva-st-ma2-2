@@ -11,11 +11,11 @@ import Lecture2Test
 
 -- Name range to be used when generating formulas
 formulaGeneratorRange :: (Name, Name)
-formulaGeneratorRange = (1, 15)
+formulaGeneratorRange = (1, 5)
 
 -- Random sub-formulas to be used
 randomSubForms :: Int
-randomSubForms = 10
+randomSubForms = 30
 
 -- Generates a random formula
 randomFormCase :: IO Form
