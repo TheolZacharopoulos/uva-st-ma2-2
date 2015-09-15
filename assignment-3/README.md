@@ -1,12 +1,11 @@
-# 1
-## Description of method of checking definitions
-## Indication of time spent
+# Assignment 3
 
-# 2
-## Indication of time spent
+## Test reports
+**TODO**
 
-# 3
-## Indication of time spent
-
-# 4
-## Indication of time spent
+## Time spend
+- Lab3_1: **5**-hours.
+- FormulaGenerator: **2**-hours
+- ParseTest: **2**-hours.
+- CnfConverter: **5**-hours.
+- Bonus: **1**-hours.
