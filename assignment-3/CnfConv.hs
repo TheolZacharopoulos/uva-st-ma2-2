@@ -67,7 +67,7 @@ cnfr (Dsj fs) =
     if length cnj == 0 then
         Dsj (map cnfr fs)
     else
-        (cnfr . flatten) (mergeCnj (cnj !! 0) others)
+        (cnfr . flatten) (mergeCnj (head cnj) others)
     where 
         -- Takes a list of forms, returns the first occurance of a conjunction in a list.
         -- If the list of forms has no conjunction, returns empty list.
@@ -77,8 +77,8 @@ cnfr (Dsj fs) =
         -- findCnj (f:fs) = findCnj fs
 
         (cnj, others) = foldr splitOff1Cnj ([],[]) fs
-            where splitOff1Cnj f'@(Cnj _) ([], r)  = ([f'], r)
-                  splitOff1Cnj f'         ([c], r) = ([c], f':r)
+            where splitOff1Cnj f'         ([c], r) = ([c], f':r)
+                  splitOff1Cnj f'@(Cnj _) ([], r)  = ([f'], r)
                   splitOff1Cnj f'         (cs, r)  = (cs, f':r)
 
         -- cnj = findCnj fs
@@ -88,11 +88,11 @@ cnfr (Dsj fs) =
         -- Applies the distributive property to every form in the list with the conjunction,
         -- Returns the result in a list.
         mergeCnj :: Form -> [Form] -> Form
-        mergeCnj c           []      = c
         mergeCnj c@(Cnj fs1) (f:fs2) = mergeCnj (Cnj $ applyDistrProp f fs1) fs2
+        mergeCnj c           []      = c
 
         -- Takes a form, and a list of forms which represents the body of a conjunction.
         -- Applies the distributive property.
         applyDistrProp :: Form -> [Form] -> [Form]
-        applyDistrProp _  []      = []
         applyDistrProp f1 (f2:fs) = Dsj [f1, f2] : applyDistrProp f1 fs
+        applyDistrProp _  []      = []
