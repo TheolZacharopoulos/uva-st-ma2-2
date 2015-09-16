@@ -1,4 +1,4 @@
-module CnfConv (cnf, isCnf) where
+module CnfConv where
 
 import Lecture3
 import Data.List ((\\))
@@ -10,7 +10,8 @@ contradictionForm = (Cnj [Prop 1, (Neg $ Prop 1)])
 -- Sidenote: the finaly application of flatten only serves to make the output
 -- more understandable (prettier).
 cnf :: Form -> Form
-cnf = flatten . cnfr . flatten . nnf . filterIllegalForm . arrowfree
+cnf = flatten . cnfr . flatten . nnf . flatten . filterIllegalForm
+    . flatten . arrowfree
 
 -- Check that a formula is in CNF form
 isCnf :: Form -> Bool
@@ -46,30 +47,14 @@ filterIllegalForm (Dsj fs) = Dsj $ map filterIllegalForm fs
 flatten :: Form  -> Form
 flatten (Prop x) = Prop x
 flatten (Neg f) = Neg (flatten f)
-flatten (Cnj fs) = Cnj (map flatten (flattenCnjBody fs))
+flatten (Cnj fs) = Cnj $ foldr flattenBody [] fs
     where
-        -- If input is a conjunction, return its body.
-        -- Otherwise, return input in a list.
-        flattenCnj :: Form -> [Form]
-        flattenCnj (Cnj fs) = flattenCnjBody fs
-        flattenCnj f = [f]
-
-        -- Takes the body of a conjunction.
-        -- Returns an equivalent flattened body.
-        flattenCnjBody :: [Form] -> [Form]
-        flattenCnjBody = concatMap flattenCnj
-
-flatten (Dsj fs) = Dsj (map flatten (flattenDsjBody fs))
+        flattenBody (Cnj fs') rs = foldr flattenBody rs fs'
+        flattenBody f'        rs = flatten f' : rs
+flatten (Dsj fs) = Dsj $ foldr flattenBody [] fs
     where
-        -- If input is a disjunction, return its body.
-        -- Otherwise, return input in a list.
-        flattenDsj :: Form -> [Form]
-        flattenDsj (Dsj fs) = flattenDsjBody fs
-        flattenDsj f = [f]
-
-        -- Takes the body of a disjunction, returns an equivalent flattened body/
-        flattenDsjBody :: [Form] -> [Form]
-        flattenDsjBody = concatMap flattenDsj
+        flattenBody (Dsj fs') rs = foldr flattenBody rs fs'
+        flattenBody f' rs        = flatten f' : rs
 
 -- Takes a flattened, arrowfree, negation normal form, and legal Form.
 -- Returns an equivalent form in conjunction normal form.
@@ -86,27 +71,28 @@ cnfr (Dsj fs) =
     where 
         -- Takes a list of forms, returns the first occurance of a conjunction in a list.
         -- If the list of forms has no conjunction, returns empty list.
-        findCnj :: [Form] -> [Form] -- TODO: refactor to Maybe Form
-        findCnj [] = []
-        findCnj ((Cnj fs) : _) = [Cnj fs]
-        findCnj (f:fs) = findCnj fs
+        -- findCnj :: [Form] -> [Form] -- TODO: refactor to Maybe Form
+        -- findCnj [] = []
+        -- findCnj ((Cnj fs) : _) = [Cnj fs]
+        -- findCnj (f:fs) = findCnj fs
 
-        cnj = findCnj fs
-        others = fs \\ cnj
+        (cnj, others) = foldr splitOff1Cnj ([],[]) fs
+            where splitOff1Cnj f'@(Cnj _) ([], r)  = ([f'], r)
+                  splitOff1Cnj f'         ([c], r) = ([c], f':r)
+                  splitOff1Cnj f'         (cs, r)  = (cs, f':r)
+
+        -- cnj = findCnj fs
+        -- others = fs \\ cnj
 
         -- Takes a Conjunction and a list of Forms, 
         -- Applies the distributive property to every form in the list with the conjunction,
         -- Returns the result in a list.
         mergeCnj :: Form -> [Form] -> Form
-        mergeCnj c [] = c
-        mergeCnj c@(Cnj fs1) (f:fs2) = (mergeCnj newC fs2)
-            where 
-                newCBody = applyDistrProp f fs1
-                newC = Cnj newCBody
+        mergeCnj c           []      = c
+        mergeCnj c@(Cnj fs1) (f:fs2) = mergeCnj (Cnj $ applyDistrProp f fs1) fs2
 
         -- Takes a form, and a list of forms which represents the body of a conjunction.
         -- Applies the distributive property.
         applyDistrProp :: Form -> [Form] -> [Form]
-        applyDistrProp _ [] = []
-        applyDistrProp f1 (f2:fs) = 
-            [Dsj [f1, f2]] ++ (applyDistrProp f1 fs) 
+        applyDistrProp _  []      = []
+        applyDistrProp f1 (f2:fs) = Dsj [f1, f2] : applyDistrProp f1 fs
