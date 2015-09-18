@@ -7,8 +7,8 @@ import Data.List ((\\))
 -- Sidenote: the finaly application of flatten only serves to make the output
 -- more understandable (prettier).
 cnf :: Form -> Form
-cnf = flattenCompress . cnfr . flattenCompress . nnf . flattenCompress . filterIllegalForm
-    . flattenCompress . arrowfree
+cnf = flattenCompress . cnfr . flattenCompress . nnf . flattenCompress
+    . filterIllegalForm . arrowfree
 
 -- Check that a formula is in CNF form
 isCnf :: Form -> Bool
