@@ -10,15 +10,17 @@ import Lecture3
 randomForm :: (Name, Name) -> Int -> IO Form
 
 randomForm range 1 = do
-    m <- randomRIO (0,2) :: IO Int
+    m <- randomRIO (0,4) :: IO Int
     case m of
         0 -> randomAtomicProp range
         1 -> return $ Cnj [] -- evl [] (Cnj []) = True
         2 -> return $ Dsj [] -- evl [] (Dsj []) = False
+        3 -> return T
+        4 -> return F
 
 randomForm range 2 = do
     m <- randomRIO (0,2) :: IO Int
-    f <- randomAtomicProp range
+    f <- randomForm range 1
     case m of
         0 -> return $ Neg f 
         1 -> return $ Cnj [f]
@@ -54,7 +56,7 @@ randomAtomicProp range = do
 
 randomForms :: (Name, Name) -> Int -> IO [Form]
 randomForms range 1 = do
-    f <- randomAtomicProp range
+    f <- randomForm range 1
     return [f]
 
 randomForms range n = do
