@@ -6,6 +6,11 @@ import Control.Monad
 
 import Lecture3
 
+-- Preconditions: We do not have any preconditions
+
+-- Postconditions:
+-- Returns true iff:
+--      Originally generated formula and its stringified and then parsed version be equivalent
 prop_parsed :: Form -> Bool
 prop_parsed f =
     let formula = show f in
@@ -45,6 +50,8 @@ rndForm n | n > 0 =
             fs <- vectorOf 1 subform
             return fs
 
+---------------------------------
+-- Test Options
 options :: Args
 options = Args
     { replay = Nothing
