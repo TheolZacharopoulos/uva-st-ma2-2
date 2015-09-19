@@ -12,6 +12,3 @@ You can run all the tests of the modules by loading the **allTests.hs** module a
 - ParseTest: **2**-hours.
 - CnfConverter: **5**-hours.
 - Bonus: **1**-hours.
-
-# TODO
-- Refactor CNF.

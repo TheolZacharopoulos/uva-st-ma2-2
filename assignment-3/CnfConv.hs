@@ -28,10 +28,14 @@ isCnfLit (Neg T)        = True
 isCnfLit (Neg F)        = True
 isCnfLit _              = False
 
+-- Flatten and compress a formula (see below), gives a noticeable
+-- performance boost
 flattenCompress = until (\f -> (flatten.compress) f == f) (flatten.compress)
 
 -- Compresses a Form
--- Applies some rules of logic when it encounters T's and F's
+-- Applies some rules of logic when it encounters T's and F's to make a
+-- formula shorter. This helps performance quite a lot when converting things
+-- to CNF.
 compress :: Form -> Form
 compress = until (\f -> compress' f == f) compress'
     where compress' p@(Prop _)  = p
