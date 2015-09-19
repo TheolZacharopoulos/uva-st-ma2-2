@@ -8,8 +8,8 @@ import Lecture3
 
 -- Preconditions for cnf2cls : Form is in CNF
 
-{- We test the cnf2cls function by giving it a reasonably complete list of
- - valid CNF formulas.
+{- We test the cnf2cls function by giving it a reasonably complete list
+ - (in the sense of syntactical variety) of valid CNF formulas.
  -}
 
 testCnf :: IO ()
@@ -26,6 +26,8 @@ randomCnf = do
 verifyCnf :: Form -> Clauses -> Bool
 verifyCnf f c = all (\(f',c') -> f /= f' || c == c') goodCnfs
 
+-- A list of valid CNF formulas with the expected resulting Clauses format
+-- of the formula after cnf2cls is applied.
 goodCnfs :: [(Form, Clauses)]
 goodCnfs =
     [(Prop 1, [[1]])

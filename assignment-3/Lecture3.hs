@@ -206,6 +206,8 @@
         | TokenInt Int 
         | TokenOP
         | TokenCP
+        | TokenF
+        | TokenT
    deriving (Show,Eq)
 
   lexer :: String -> [Token]
@@ -219,6 +221,8 @@
   lexer ('-':cs) = TokenNeg : lexer cs 
   lexer ('=':'=':'>':cs) = TokenImpl : lexer cs
   lexer ('<':'=':'>':cs) = TokenEquiv : lexer cs
+  lexer ('F':cs) = TokenF : lexer cs
+  lexer ('T':cs) = TokenT : lexer cs
   lexer (x:_) = error ("unknown token: " ++ [x])
 
   lexNum cs = TokenInt (read num) : lexer rest
@@ -231,6 +235,8 @@
 
   parseForm :: Parser Token Form 
   parseForm (TokenInt x: tokens) = [(Prop x,tokens)]
+  parseForm (TokenF : tokens) = [(F,tokens)]
+  parseForm (TokenT : tokens) = [(T,tokens)]
   parseForm (TokenNeg : tokens) =
     [ (Neg f, rest) | (f,rest) <- parseForm tokens ]
   parseForm (TokenCnj : TokenOP : tokens) = 

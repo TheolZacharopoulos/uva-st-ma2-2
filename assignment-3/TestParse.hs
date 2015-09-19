@@ -8,6 +8,12 @@ import Lab3_1
 import Lecture2Test
 import FormulaGenerator
 
+-- Test method: stringify random formulas and check that their parsed
+-- versions are equivalent to their original versions.
+
+-- Outcome: so far, each time we run a test with a 1000 random cases, all tests
+-- pass.
+
 -- Preconditions: We do not have any preconditions
 
 -- Postconditions:
