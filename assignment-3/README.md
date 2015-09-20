@@ -9,6 +9,7 @@ You can run all the tests of the modules by loading the **allTests.hs** module a
 ## Time spend
 - Lab3_1: **5**-hours.
 - FormulaGenerator: **2**-hours
+- Quick Check FormulaGenerator (Including quickCheck learning time) : **4**-hours
 - ParseTest: **2**-hours.
 - CnfConverter: **5**-hours.
 - Bonus: **1**-hours.
