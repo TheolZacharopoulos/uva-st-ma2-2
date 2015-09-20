@@ -119,6 +119,8 @@
             | Dsj [Form]
             | Impl Form Form 
             | Equiv Form Form 
+            | T
+            | F
             deriving Eq
 
   instance Show Form where 
@@ -130,6 +132,8 @@
                              ++ show f2 ++ ")"
     show (Equiv f1 f2)  = "(" ++ show f1 ++ "<=>" 
                              ++ show f2 ++ ")"
+    show T          = "T"
+    show F          = "F"
   
   showLst,showRest :: [Form] -> String
   showLst [] = ""
@@ -153,6 +157,7 @@
     pnames (Dsj fs) = concat (map pnames fs)
     pnames (Impl f1 f2)  = concat (map pnames [f1,f2])
     pnames (Equiv f1 f2) = concat (map pnames [f1,f2])
+    pnames _ = []
 
   type Valuation = [(Name,Bool)]
   
@@ -186,6 +191,8 @@
   evl xs (Impl f1 f2) = 
       not (evl xs f1) || evl xs f2
   evl xs (Equiv f1 f2) = evl xs f1 == evl xs f2
+  evl _ T = True
+  evl _ F = False
 
   satisfiable :: Form -> Bool
   satisfiable f = any (\ v -> evl v f) (allVals f)
@@ -199,6 +206,8 @@
         | TokenInt Int 
         | TokenOP
         | TokenCP
+        | TokenF
+        | TokenT
    deriving (Show,Eq)
 
   lexer :: String -> [Token]
@@ -212,6 +221,8 @@
   lexer ('-':cs) = TokenNeg : lexer cs 
   lexer ('=':'=':'>':cs) = TokenImpl : lexer cs
   lexer ('<':'=':'>':cs) = TokenEquiv : lexer cs
+  lexer ('F':cs) = TokenF : lexer cs
+  lexer ('T':cs) = TokenT : lexer cs
   lexer (x:_) = error ("unknown token: " ++ [x])
 
   lexNum cs = TokenInt (read num) : lexer rest
@@ -224,6 +235,8 @@
 
   parseForm :: Parser Token Form 
   parseForm (TokenInt x: tokens) = [(Prop x,tokens)]
+  parseForm (TokenF : tokens) = [(F,tokens)]
+  parseForm (TokenT : tokens) = [(T,tokens)]
   parseForm (TokenNeg : tokens) =
     [ (Neg f, rest) | (f,rest) <- parseForm tokens ]
   parseForm (TokenCnj : TokenOP : tokens) = 
@@ -268,13 +281,17 @@
     Dsj [Cnj [f1', f2'], Cnj [Neg f1', Neg f2']]
     where f1' = arrowfree f1
           f2' = arrowfree f2
+  arrowfree T = T
+  arrowfree F = F
 
   nnf :: Form -> Form 
   nnf (Prop x) = Prop x
+  nnf (Neg T) = F
+  nnf (Neg F) = T
   nnf (Neg (Prop x)) = Neg (Prop x)
   nnf (Neg (Neg f)) = nnf f
   nnf (Cnj fs) = Cnj (map nnf fs)
   nnf (Dsj fs) = Dsj (map nnf fs)
   nnf (Neg (Cnj fs)) = Dsj (map (nnf.Neg) fs)
   nnf (Neg (Dsj fs)) = Cnj (map (nnf.Neg) fs)
-
+  nnf f = f

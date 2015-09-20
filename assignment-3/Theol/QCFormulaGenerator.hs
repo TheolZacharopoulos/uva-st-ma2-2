@@ -32,12 +32,14 @@ sizedRandomForm = sized rndForm
 rndForm :: Integral a => a -> Gen Form
 rndForm 0 =
     oneof [
+        elements [T, F],
         liftM Prop (elements [1..propNumber]),
         liftM Neg  (resize (negationDepth) arbitrary)
       ]
 
 rndForm n | n > 0 =
     oneof [
+        elements [T, F],
         liftM  Prop  (elements [1..propNumber]),
         liftM  Neg   (resize (negationDepth) arbitrary),
         liftM  Cnj   (listOf subform),
@@ -48,7 +50,7 @@ rndForm n | n > 0 =
     where
         -- Generates a form and divides n to control the size of recursive depth.
         subform :: Gen Form
-        subform = rndForm (n `div` 10)
+        subform = rndForm (n `div` 8)
 
 ---------------------------------
 -- Test runner options
