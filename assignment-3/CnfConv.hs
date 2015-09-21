@@ -94,7 +94,7 @@ cnfr :: Form -> Form
 cnfr T = T
 cnfr F = F
 cnfr (Prop x) = Prop x
-cnfr (Neg f) = Neg (cnfr f)
+cnfr (Neg f)  = Neg (cnfr f)
 cnfr (Cnj fs) = Cnj (map cnfr fs)
 cnfr (Dsj fs) = 
     if length cnj == 0 then
@@ -102,20 +102,10 @@ cnfr (Dsj fs) =
     else
         (cnfr . flatten . mergeCnj (head cnj)) others
     where 
-        -- Takes a list of forms, returns the first occurance of a conjunction in a list.
-        -- If the list of forms has no conjunction, returns empty list.
-        -- findCnj :: [Form] -> [Form] -- TODO: refactor to Maybe Form
-        -- findCnj [] = []
-        -- findCnj ((Cnj fs) : _) = [Cnj fs]
-        -- findCnj (f:fs) = findCnj fs
-
         (cnj, others) = foldr splitOff1Cnj ([],[]) fs
             where splitOff1Cnj f'         ([c], r) = ([c], f':r)
                   splitOff1Cnj f'@(Cnj _) ([], r)  = ([f'], r)
                   splitOff1Cnj f'         (cs, r)  = (cs, f':r)
-
-        -- cnj = findCnj fs
-        -- others = fs \\ cnj
 
         -- Takes a Conjunction and a list of Forms, 
         -- Applies the distributive property to every form in the list with the conjunction,
