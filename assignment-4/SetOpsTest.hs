@@ -6,12 +6,35 @@ import Data.List
 import SetOrd
 import Test.QuickCheck
 import QCSetGenerator
+import SetIntGenerator
 
 -- Helper function, logical implication.
 impl :: Bool -> Bool -> Bool
 impl True False = False
 impl _ _ = True
 
+data Prop =
+        OneArgProp ((Set Int) -> Bool)
+    |   TwoArgProp ((Set Int) -> (Set Int) -> Bool) 
+    |   ThreeArgProp ((Set Int) -> (Set Int) -> (Set Int) -> Bool)
+
+propChecker :: Prop -> Int -> IO (Bool)
+propChecker _ 0 = return True
+propChecker p@(OneArgProp (f)) n = do
+    s <- getRandomSetInt 10
+    b <- propChecker p (n-1)
+    return $ f s && b
+propChecker p@(TwoArgProp (f)) n = do
+    s1 <- getRandomSetInt 10
+    s2 <- getRandomSetInt 10
+    b <- propChecker p (n-1)
+    return $ f s1 s2 && b
+propChecker p@(ThreeArgProp (f)) n = do
+    s1 <- getRandomSetInt 10
+    s2 <- getRandomSetInt 10
+    s3 <- getRandomSetInt 10
+    b <- propChecker p (n-1)
+    return $ f s1 s2 s3 && b
 -----------------
 -- Intersection
 
