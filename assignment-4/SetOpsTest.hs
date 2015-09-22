@@ -13,28 +13,43 @@ impl :: Bool -> Bool -> Bool
 impl True False = False
 impl _ _ = True
 
-data Prop =
+data CustomProp =
         OneArgProp ((Set Int) -> Bool)
     |   TwoArgProp ((Set Int) -> (Set Int) -> Bool) 
     |   ThreeArgProp ((Set Int) -> (Set Int) -> (Set Int) -> Bool)
 
-propChecker :: Prop -> Int -> IO (Bool)
+propChecker :: CustomProp -> Int -> IO (Bool)
 propChecker _ 0 = return True
 propChecker p@(OneArgProp (f)) n = do
     s <- getRandomSetInt 10
     b <- propChecker p (n-1)
-    return $ f s && b
+    let res = f s
+    if res 
+        then return () 
+        else putStrLn $ show s 
+    return $ res && b
+
 propChecker p@(TwoArgProp (f)) n = do
     s1 <- getRandomSetInt 10
     s2 <- getRandomSetInt 10
     b <- propChecker p (n-1)
-    return $ f s1 s2 && b
+    let res = f s1 s2
+    if res 
+        then return () 
+        else putStrLn $ show s1 ++ " " ++ show s2 
+    return $ res && b
+
 propChecker p@(ThreeArgProp (f)) n = do
     s1 <- getRandomSetInt 10
     s2 <- getRandomSetInt 10
     s3 <- getRandomSetInt 10
     b <- propChecker p (n-1)
-    return $ f s1 s2 s3 && b
+    let res = f s1 s2 s3
+    if res 
+        then return () 
+        else putStrLn $ show s1 ++ " " ++ show s2 ++ " " ++ show s3 
+    return $ res && b
+
 -----------------
 -- Intersection
 
@@ -122,11 +137,13 @@ options = Args {
     chatty = True
 }
 
-runTests :: Args -> IO ()
-runTests args = do
+-- Quick Check test runner.
+runTestsQC :: Args -> IO ()
+runTestsQC args = do
     f prop_intersectionSet_elemIn "prop_intersectionSet_elemIn OK?"
     f prop_intersectionSet_empty "prop_intersectionSet_empty OK?"
     f prop_intersectionSet_Idempotence "prop_intersectionSet_Idempotence OK?"
+    f prop_intersectionSet_Associativity "prop_intersectionSet_Associativity OK?"
     f prop_intersectionSet_Communitativity "prop_intersectionSet_Communitativity OK?"
     f prop_intersectionSet_Distributivity "prop_intersectionSet_Distributivity OK?"
 
@@ -134,6 +151,7 @@ runTests args = do
     f prop_unionSet_empty "prop_unionSet_empty OK?"
     f prop_unionSet_Idempotence "prop_unionSet_Idempotence OK?"
     f prop_unionSet_Associativity "prop_unionSet_Associativity OK?"
+    f prop_unionSet_Communitativity "prop_intersectionSet_Communitativity OK?"
     f prop_unionSet_Distributivity "prop_unionSet_Distributivity OK?"
 
     f prop_differenceSet_elemNotIn "prop_differenceSet_elemNotIn OK?"
@@ -146,6 +164,40 @@ runTests args = do
             quickCheckWithResult args prop
             return ()
 
+-- Custom Property Check test runner.
+
+runTestsCPC :: IO ()
+runTestsCPC = do
+    f (TwoArgProp prop_intersectionSet_elemIn) "prop_intersectionSet_elemIn OK?"
+    f (OneArgProp prop_intersectionSet_empty) "prop_intersectionSet_empty OK?"
+    f (OneArgProp prop_intersectionSet_Idempotence) "prop_intersectionSet_Idempotence OK?"
+    f (ThreeArgProp prop_intersectionSet_Associativity) "prop_intersectionSet_Associativity OK?"
+    f (TwoArgProp prop_intersectionSet_Communitativity) "prop_intersectionSet_Communitativity OK?"
+    f (ThreeArgProp prop_intersectionSet_Distributivity) "prop_intersectionSet_Distributivity OK?"
+
+    f (TwoArgProp prop_unionSet_elemIn) "prop_unionSet_elemIn OK?"
+    f (OneArgProp prop_unionSet_empty) "prop_unionSet_empty OK?"
+    f (OneArgProp prop_unionSet_Idempotence) "prop_unionSet_Idempotence OK?"
+    f (ThreeArgProp prop_unionSet_Associativity) "prop_unionSet_Associativity OK?"
+    f (TwoArgProp prop_unionSet_Communitativity) "prop_intersectionSet_Communitativity OK?"
+    f (ThreeArgProp prop_unionSet_Distributivity) "prop_unionSet_Distributivity OK?"
+
+    f (TwoArgProp prop_differenceSet_elemNotIn) "prop_differenceSet_elemNotIn OK?"
+    f (OneArgProp prop_differenceSet_self) "prop_differenceSet_self OK?"
+    f (OneArgProp prop_differenceSet_empty) "prop_differenceSet_empty OK?"
+
+    where
+        f :: (CustomProp) -> String -> IO ()
+        f prop str = do
+            putStrLn str
+            res <- propChecker prop 100
+            putStrLn (if res then "Success!!!!" else "Fail :(")
+            return ()
+
 main :: IO ()
 main = do
-    runTests options
+    putStrLn "QuickCheck Tests:"
+    runTestsQC options
+    putStrLn "Custom generator Tests:"
+    runTestsCPC
+    putStrLn "Done."
