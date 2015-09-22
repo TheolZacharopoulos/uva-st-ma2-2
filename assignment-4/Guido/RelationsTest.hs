@@ -11,34 +11,53 @@ import Test.QuickCheck
 import Data.List
 import Relations
 
-isRel :: Rel Int -> Bool
-isRel r = length r == length (nub r)
+newtype TRel a = TRel (Rel a)
+    deriving (Show)
 
--- Invariants on (inverseRel r)
--- 1. is a valid relation
--- 2. contains all the inverted pairs of r.
--- 3. contains only the inverted pairs of r.
-prop_hasOnlyInverse_inverseRel :: Rel Int -> Property
-prop_hasOnlyInverse_inverseRel r = isRel r ==>
-    isRel r'
-    &&
+instance (Arbitrary a, Ord a) => Arbitrary (TRel a) where
+    arbitrary = do
+        values <- (suchThat orderedList isUniqueList)
+        return $ TRel values
+        where
+            isUniqueList xs = (nub xs == xs)
+
+isRel :: Rel Int -> Bool
+isRel r = length r == length (nub r) && sort r == r
+
+-- (inverseRel r) is a valid relation
+prop_isRel_inverseRel :: TRel Int -> Bool
+prop_isRel_inverseRel (TRel r) = isRel (inverseRel r)
+
+-- (inverseRel r) contains all the inverted pairs of r.
+prop_hasAll_inverseRel :: Rel Int -> Property
+prop_hasAll_inverseRel r = isRel r ==>
     all (\(x,y) -> (y,x) `elem` r') r
-    &&
-    all (\(x,y) -> (y,x) `elem` r) r'
     where r' = inverseRel r
 
--- Invariants on (unionRel r s)
--- 1. is a valid relation
--- 2. contains all the elements that are in either r or s
--- 3. contains only the elements that are in either r or s
-prop_hasOnlyBoth_unionRel :: Rel Int -> Rel Int -> Property
-prop_hasOnlyBoth_unionRel r s = isRel r && isRel s ==>
-    isRel u
-    &&
-    all (\e -> e `elem` r || e `elem` s) u
-    &&
-    null (r \\ u) && null (s \\ u)
+-- r contains all the inverted pairs of (inverseRel r).
+prop_hasOnly_inverseRel :: Rel Int -> Property
+prop_hasOnly_inverseRel r = isRel r ==>
+    all (\(x,y) -> (y,x) `elem` r) (inverseRel r)
+
+-- inverseRel is an `involution` 
+prop_involution_inverseRel :: Rel Int -> Property
+prop_involution_inverseRel r = isRel r ==>
+    (inverseRel.inverseRel) r == r
+
+-- (unionRel r) is a valid relation
+prop_isRel_unionRel :: TRel Int -> TRel Int -> Bool
+prop_isRel_unionRel (TRel r) (TRel s) = isRel (unionRel r s)
+
+-- (unionRel r s) contains all the elements of r and s.
+prop_hasAll_unionRel :: Rel Int -> Rel Int -> Property
+prop_hasAll_unionRel r s = isRel r && isRel s ==>
+    all (flip elem u) (r ++ s)
     where u = unionRel r s
+
+-- (unionRel r s) contains only elements in either r or s.
+prop_hasOnly_unionRel :: Rel Int -> Rel Int -> Property
+prop_hasOnly_unionRel r s = isRel r && isRel s ==>
+    all (\e -> e `elem` r || e `elem` s) (unionRel r s)
 
 -- Invariants on (symClos r)
 -- 1. is a valid relation
@@ -67,3 +86,18 @@ prop_hasOnlyOriginalAndTransitive_trClos r = isRel r ==>
     null (r \\ r') && null (rt \\ r')
     where r' = trClos r
           rt = r @@ r
+
+runTests = do
+    sequence_ $ map (quickCheckWith args)
+        [prop_isRel_inverseRel
+        ]
+    sequence_ $ map (quickCheckWith args)
+        [prop_isRel_unionRel
+        ]
+    where args = Args {
+        replay = Nothing,
+        maxSuccess = 100,
+        maxDiscardRatio = 100,
+        maxSize = 100,
+        chatty = True
+    }
