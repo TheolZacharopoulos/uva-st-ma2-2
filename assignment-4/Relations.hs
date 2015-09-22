@@ -3,6 +3,9 @@ module Relations where
 import Data.Tuple
 import Data.List
 
+fp :: Eq a => (a -> a) -> a -> a 
+fp f = until (\ x -> x == f x) f
+
 type Rel a = [(a,a)]
 
 inverseRel :: Ord a => Rel a -> Rel a
@@ -19,4 +22,4 @@ infixr 5 @@
 r @@ s = nub [ (x,z) | (x,y) <- r, (w,z) <- s, y == w ]
 
 trClos :: Ord a => Rel a -> Rel a
-trClos r = unionRel r (r @@ r)
+trClos = fp (\r -> unionRel r (r @@ r))

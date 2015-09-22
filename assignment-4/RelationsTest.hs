@@ -8,10 +8,11 @@ module RelationsTest where
  - in `symClos` and `trClos` these are also tested.
  -}
 
+import Data.List
+import Data.Maybe
+import Relations
 import Test.QuickCheck
 import Test.QuickCheck.All
-import Data.List
-import Relations
 
 newtype TestRel a = TestRel (Rel a)
     deriving (Show)
@@ -25,6 +26,33 @@ instance (Arbitrary a, Ord a) => Arbitrary (TestRel a) where
 
 isRel :: Rel Int -> Bool
 isRel r = length r == length (nub r) && sort r == r
+
+involutory :: (Rel Int -> Rel Int) -> TestRel Int -> Bool
+involutory f (TestRel r) = (f.f) r == r
+
+idempotent :: (Rel Int -> Rel Int) -> TestRel Int -> Bool
+idempotent f (TestRel r) = f r == f (f r)
+
+commutative :: (Rel Int -> Rel Int -> Rel Int)
+            -> TestRel Int -> TestRel Int -> Bool
+commutative f (TestRel r) (TestRel s) = f r s == f s r
+
+associative :: (Rel Int -> Rel Int -> Rel Int)
+            -> TestRel Int -> TestRel Int -> TestRel Int -> Bool
+associative f (TestRel r) (TestRel s) (TestRel t) = f (f r s) t == f r (f s t)
+
+explainTransitiveRelation :: Rel Int -> Rel Int -> (Int,Int) -> Bool
+explainTransitiveRelation base closure r@(a,c) =
+    r `elem` base ||
+    (isJust maybeB &&
+     explainTransitiveRelation base closure (a,b) &&
+     explainTransitiveRelation base closure (b,c))
+    where allAs         = filter ((== a).fst) closure
+          allCs         = filter ((== c).snd) closure
+          allPossibleBs = filter (\b -> b /= a && b /= c) $ map snd allAs ++ map fst allCs
+          allBs         = allPossibleBs \\ nub allPossibleBs
+          maybeB        = if null allBs then Nothing else Just (head allBs)
+          b             = fromJust maybeB
 
 -- (inverseRel r) is a valid relation
 prop_isRel_inverseRel :: TestRel Int -> Bool
@@ -41,10 +69,8 @@ prop_hasOnly_inverseRel :: TestRel Int -> Bool
 prop_hasOnly_inverseRel (TestRel r) = 
     all (\(x,y) -> (y,x) `elem` r) (inverseRel r)
 
--- inverseRel is an `involution` 
-prop_involution_inverseRel :: TestRel Int -> Bool
-prop_involution_inverseRel (TestRel r) =
-    (inverseRel.inverseRel) r == r
+-- inverseRel is involutory
+prop_involution_inverseRel = involutory inverseRel
 
 -- (unionRel r) is a valid relation
 prop_isRel_unionRel :: TestRel Int -> TestRel Int -> Bool
@@ -61,33 +87,60 @@ prop_hasOnly_unionRel :: TestRel Int -> TestRel Int -> Bool
 prop_hasOnly_unionRel (TestRel r) (TestRel s) = 
     all (\e -> e `elem` r || e `elem` s) (unionRel r s)
 
--- Invariants on (symClos r)
--- 1. is a valid relation
--- 2. contains all the elements that are in either r or (inverseRel r)
--- 3. contains only the elements that are in either r or (inverseRel r)
-prop_hasOnlyOriginalAndInverse_symClos :: TestRel Int -> Bool
-prop_hasOnlyOriginalAndInverse_symClos (TestRel r) =
-    isRel r'
-    &&
-    all (\e -> e `elem` r || e `elem` ri) r'
-    &&
-    null (r \\ r') && null (ri \\ r')
-    where r' = symClos r
-          ri = inverseRel r
+-- unionRel is idempotent
+prop_idempotence_unionRel (TestRel r) = idempotent (unionRel r)
 
--- Invariants on (trClos r)
--- 1. is a valid relation
--- 2. contains all the elements that are in either r or (r @@ r)
--- 3. contains only the elements that are in either r or (r @@ r)
-prop_hasOnlyOriginalAndTransitive_trClos :: TestRel Int -> Bool
-prop_hasOnlyOriginalAndTransitive_trClos (TestRel r) =
-    isRel r'
-    &&
-    all (\e -> e `elem` r || e `elem` rt) r'
-    &&
-    null (r \\ r') && null (rt \\ r')
+-- unionRel is commutative
+prop_commutativity_unionRel = commutative unionRel
+
+-- unionRel is commutative
+prop_associativity_unionRel = associative unionRel
+
+-- symClos is a valid relation
+prop_isRel_symClos :: TestRel Int -> Bool
+prop_isRel_symClos (TestRel r) = isRel (symClos r)
+
+-- (symClos r) contains all the elements from r and (inverseRel r)
+prop_hasAll_symClos :: TestRel Int -> Bool
+prop_hasAll_symClos (TestRel r) = 
+    all (flip elem r') (r ++ inverseRel r)
+    where r' = symClos r
+
+-- (symClos r) contains only the elements in either r or (inverseRel r)
+prop_hasOnly_symClos :: TestRel Int -> Bool
+prop_hasOnly_symClos (TestRel r) =
+    all (\e -> e `elem` r || e `elem` r') (symClos r)
+    where r' = inverseRel r
+
+-- symClos is idempotent
+prop_idempotence_symClos = idempotent symClos
+
+-- trClos is a valid relation
+prop_isRel_trClos :: TestRel Int -> Bool
+prop_isRel_trClos (TestRel r) = isRel (trClos r)
+
+-- (trClos r) contains all elements r
+prop_hasOriginal_trClos :: TestRel Int -> Bool
+prop_hasOriginal_trClos (TestRel r) =
+    all (flip elem r') r
     where r' = trClos r
-          rt = r @@ r
+
+-- (trClos r) contains all elements r @@ r
+prop_hasTransitive_trClos :: TestRel Int -> Bool
+prop_hasTransitive_trClos (TestRel r) =
+    all (flip elem r') (r @@ r)
+    where r' = trClos r
+
+-- trClos is idempotent
+prop_idempotence_trClos = idempotent trClos
+
+-- explain every relation in (trClos r) by leading it back to relations in r.
+-- This is necessary otherwise it's possible to create a nasty idempotent
+-- (trClos r) that always returns a relation with a certain element X,
+-- even though X is never in the original or transitive of r
+prop_transitivity_trClos :: TestRel Int -> Bool
+prop_transitivity_trClos (TestRel r) = all (explainTransitiveRelation r r') r
+    where r' = trClos r
 
 return []
 runTests = $quickCheckAll
