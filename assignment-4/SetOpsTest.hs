@@ -1,5 +1,5 @@
 -- Set Operations Test properties
-module SetOpsTest (main) where
+module SetOpsTest where
 
 import SetOps
 import Data.List
@@ -194,8 +194,7 @@ runTestsCPC = do
             putStrLn (if res then "Success!!!!" else "Fail :(")
             return ()
 
-main :: IO ()
-main = do
+runTests = do
     putStrLn "QuickCheck Tests:"
     runTestsQC options
     putStrLn "Custom generator Tests:"
