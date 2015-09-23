@@ -14,6 +14,9 @@ import Relations
 import Test.QuickCheck
 import Test.QuickCheck.All
 
+-- In order to use QuickCheck we need to wrap the `Rel a` type in a `newtype`
+-- datatype, otherwise we cannot define a sufficiently effective Arbitrary
+-- generator (because `Rel a` is a type synonym).
 newtype TestRel a = TestRel (Rel a)
     deriving (Show)
 
@@ -24,8 +27,9 @@ instance (Arbitrary a, Ord a) => Arbitrary (TestRel a) where
         where
             isUniqueList xs = (nub xs == xs)
 
+-- Some helper functions to assert invariants on relations
 isRel :: Rel Int -> Bool
-isRel r = length r == length (nub r) && sort r == r
+isRel r = (sort.nub) r == r
 
 involutory :: (Rel Int -> Rel Int) -> TestRel Int -> Bool
 involutory f (TestRel r) = (f.f) r == r
@@ -41,6 +45,8 @@ associative :: (Rel Int -> Rel Int -> Rel Int)
             -> TestRel Int -> TestRel Int -> TestRel Int -> Bool
 associative f (TestRel r) (TestRel s) (TestRel t) = f (f r s) t == f r (f s t)
 
+-- This succeeds if all relations in the `closure` argument can be
+-- explained by zero or more transitive relations in the `base` argument.
 explainTransitiveRelation :: Rel Int -> Rel Int -> (Int,Int) -> Bool
 explainTransitiveRelation base closure r@(a,c) =
     r `elem` base ||
@@ -69,7 +75,7 @@ prop_hasOnly_inverseRel :: TestRel Int -> Bool
 prop_hasOnly_inverseRel (TestRel r) = 
     all (\(x,y) -> (y,x) `elem` r) (inverseRel r)
 
--- inverseRel is involutory
+-- inverseRel is 'involutory'
 prop_involution_inverseRel = involutory inverseRel
 
 -- (unionRel r) is a valid relation
@@ -136,8 +142,8 @@ prop_idempotence_trClos = idempotent trClos
 
 -- explain every relation in (trClos r) by leading it back to relations in r.
 -- This is necessary otherwise it's possible to create a nasty idempotent
--- (trClos r) that always returns a relation with a certain element X,
--- even though X is never in the original or transitive of r
+-- and transitive (trClos r) that always returns a relation with a certain
+-- element X, even though X is never in the original or transitive of r
 prop_transitivity_trClos :: TestRel Int -> Bool
 prop_transitivity_trClos (TestRel r) = all (explainTransitiveRelation r r') r
     where r' = trClos r
