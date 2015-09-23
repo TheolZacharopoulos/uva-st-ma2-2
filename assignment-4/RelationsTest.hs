@@ -76,7 +76,6 @@ prop_hasOnly_inverseRel :: TestRel Int -> Bool
 prop_hasOnly_inverseRel (TestRel r) = 
     all (\(x,y) -> (y,x) `elem` r) (inverseRel r)
 
--- inverseRel is 'involutory'
 prop_involution_inverseRel = involutory inverseRel
 
 -- (unionRel r) is a valid relation
@@ -94,13 +93,8 @@ prop_hasOnly_unionRel :: TestRel Int -> TestRel Int -> Bool
 prop_hasOnly_unionRel (TestRel r) (TestRel s) = 
     all (\e -> e `elem` r || e `elem` s) (unionRel r s)
 
--- unionRel is idempotent
 prop_idempotence_unionRel (TestRel r) = idempotent (unionRel r)
-
--- unionRel is commutative
 prop_commutativity_unionRel = commutative unionRel
-
--- unionRel is commutative
 prop_associativity_unionRel = associative unionRel
 
 -- symClos is a valid relation
@@ -119,7 +113,6 @@ prop_hasOnly_symClos (TestRel r) =
     all (\e -> e `elem` r || e `elem` r') (symClos r)
     where r' = inverseRel r
 
--- symClos is idempotent
 prop_idempotence_symClos = idempotent symClos
 
 -- trClos is a valid relation
@@ -138,7 +131,6 @@ prop_hasTransitive_trClos (TestRel r) =
     all (flip elem r') (r @@ r)
     where r' = trClos r
 
--- trClos is idempotent
 prop_idempotence_trClos = idempotent trClos
 
 -- explain every relation in (trClos r) by leading it back to relations in r.
