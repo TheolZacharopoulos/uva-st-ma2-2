@@ -46,7 +46,8 @@ associative :: (Rel Int -> Rel Int -> Rel Int)
 associative f (TestRel r) (TestRel s) (TestRel t) = f (f r s) t == f r (f s t)
 
 -- This succeeds if all relations in the `closure` argument can be
--- explained by zero or more transitive relations in the `base` argument.
+-- explained by one or more transitive steps on relations in the `base`
+-- argument (or if the relation in `closure` is already present in `base`)
 explainTransitiveRelation :: Rel Int -> Rel Int -> (Int,Int) -> Bool
 explainTransitiveRelation base closure r@(a,c) =
     r `elem` base ||
