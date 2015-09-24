@@ -40,18 +40,16 @@ See `RelationsTest.hs`
 **Time spent: 5 hours**
 
 ## 4.8
-Let _a, b, ..._ be the notation for elements of relations.
-Let _R<sup>+</sup>_ denote the transitive closure of the relation  _R_.
-Let _R<sup>s</sup>_ denote the symmetric closure of the relation _R_.
+Let `a` and `b` be elements of a set.
+Let `R<sup>+</sup>` denote the transitive closure of the relation `R`.
+Let `R<sup>s</sup>` denote the symmetric closure of the relation `R`.
 
-If _R = { (a,b) }_
+If _R = {(a,b)}_
 
 then _R<sup>+</sup> = R_
 
-and _R<sup>s</sup> = { (a,b), (b,a) }_
-
-and _R<sup>+s</sup> = R<sup>s</sup>_
+and _R<sup>+s</sup> = R<sup>s</sup> = { (a,b), (b,a) }_
 
 and _R<sup>s+</sup> = { (a,a), (a,b), (b,a), (b,b) }_
 
-and _R<sup>+s</sup> /= R<sup>s+</sup>_
+and _R<sup>+s</sup> =/= R<sup>s+</sup>_
