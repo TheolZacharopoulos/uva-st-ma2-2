@@ -54,4 +54,4 @@ and _R<sup>+s</sup> = R<sup>s</sup>_
 
 and _R<sup>s+</sup> = { (a,a), (a,b), (b,a), (b,b) }_
 
-thus _R<sup>+s</sup> /= R<sup>s+</sup>_
+and _R<sup>+s</sup> /= R<sup>s+</sup>_
