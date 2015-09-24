@@ -48,12 +48,10 @@ If _R = { (a,b) }_
 
 then _R<sup>+</sup> = R_
 
-then _R<sup>+s</sup> = { (a,b), (b,a) }_
+and _R<sup>+s</sup> = { (a,b), (b,a) }_
 
-If _R = { (a,b) }_
+and _R<sup>s</sup> = { (a,b), (b,a) }_
 
-then _R<sup>s</sup> = { (a,b), (b,a) }_
+and _R<sup>s+</sup> = { (a,a), (a,b), (b,a), (b,b) }_
 
-then _R<sup>s+</sup> = { (a,a), (a,b), (b,a), (b,b) }_
-
-Thus _R<sup>+s</sup> /= R<sup>s+</sup>_
+thus _R<sup>+s</sup> /= R<sup>s+</sup>_
