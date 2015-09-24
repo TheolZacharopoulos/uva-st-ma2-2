@@ -48,9 +48,9 @@ If _R = { (a,b) }_
 
 then _R<sup>+</sup> = R_
 
-and _R<sup>+s</sup> = { (a,b), (b,a) }_
-
 and _R<sup>s</sup> = { (a,b), (b,a) }_
+
+and _R<sup>+s</sup> = R<sup>s</sup>_
 
 and _R<sup>s+</sup> = { (a,a), (a,b), (b,a), (b,b) }_
 
