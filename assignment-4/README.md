@@ -40,4 +40,20 @@ See `RelationsTest.hs`
 **Time spent: 5 hours**
 
 ## 4.8
-*TODO Counter-example*
+Let _a, b, ..._ be the notation for elements of relations.
+Let _R<sup>+</sup>_ denote the transitive closure of the relation  _R_.
+Let _R<sup>s</sup>_ denote the symmetric closure of the relation _R_.
+
+If _R = { (a,b) }_
+
+then _R<sup>+</sup> = R_
+
+then _R<sup>+s</sup> = { (a,b), (b,a) }_
+
+If _R = { (a,b) }_
+
+then _R<sup>s</sup> = { (a,b), (b,a) }_
+
+then _R<sup>s+</sup> = { (a,a), (a,b), (b,a), (b,b) }_
+
+Thus _R<sup>+s</sup> /= R<sup>s+</sup>_
