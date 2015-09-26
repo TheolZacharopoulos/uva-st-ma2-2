@@ -36,8 +36,8 @@ instance Show Condition where
     show (Lt x y)   = show x ++ " < " ++ show y
     show (Gt x y)   = show x ++ " > " ++ show y
     show (Ng x)     = "-" ++ show x
-    show (Cj xs)    = show xs
-    show (Dj xs)    = show xs
+    show (Cj xs)    = "Cj" ++ show xs
+    show (Dj xs)    = "Dj" ++ show xs
 
 data Statement = Ass Var Expr
                | Cond Condition Statement Statement
