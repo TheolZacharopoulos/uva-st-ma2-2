@@ -10,7 +10,7 @@ tests for the module.
 ## 4.1
 * *TODO*
 
-**Time spent: TODO**
+**Time spent: 2 hours**
 
 ## 4.2
 See `QCSetGenerator.hs` and `SetIntGenerator.hs`
@@ -65,3 +65,8 @@ and _R<sup>+s</sup> = R<sup>s</sup> = {(a,b),(b,a)}_
 and _R<sup>s+</sup> = {(a,a),(a,b),(b,a),(b,b)}_
 
 and _R<sup>+s</sup> =/= R<sup>s+</sup>_
+
+## 4.9 (Bonus)
+See `Statement.hs`, only Show function is done, parse and tests are missing.
+
+**Time spend 1 hour**
