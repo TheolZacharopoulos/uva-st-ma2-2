@@ -8,7 +8,7 @@ tests for the module.
 *The test reports have been written as comments in the test files.*
 
 ## 4.1
-* *TODO*
+*No Questions*
 
 **Time spent: 2 hours**
 
@@ -70,6 +70,6 @@ and _R<sup>+s</sup> =/= R<sup>s+</sup>_
 See `Statement.hs`
 - Show functions for `Expr`, `Condition`, `Statement`
 - Random Statement generator using `quickCheck`
-- *TODO* **parser**
+- **TODO** *parser*
 
 **Time spend 2 hour**
