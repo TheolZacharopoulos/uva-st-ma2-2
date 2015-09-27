@@ -23,7 +23,7 @@ See `SetOps.hs` and `SetOpsTest.hs`
 **Time spent: 4 hours**
 
 ## 4.4
-*(Equivalence Classes and Partitions)
+* (Equivalence Classes and Partitions)
 I do not understand the equivalence classes and partitions concept and how they are connected to the topics of the lecture. We haven't see them in the workshop.
 * In the **implementing relations as function** chapter, there is this implementation of the symmetric:
 ```
@@ -70,6 +70,6 @@ and _R<sup>+s</sup> =/= R<sup>s+</sup>_
 See `Statement.hs`
 - Show functions for `Expr`, `Condition`, `Statement`
 - Random Statement generator using `quickCheck`
-- *TODO* **parser**
+- **TODO** *parser*
 
 **Time spend 2 hour**
