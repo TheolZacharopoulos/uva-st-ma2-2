@@ -2,6 +2,8 @@ module Statement where
 
 import Test.QuickCheck
 import Control.Monad
+import Data.List
+import Data.Char
 
 type Var = String
 type Env = Var -> Integer
@@ -34,9 +36,9 @@ instance Show Condition where
     show (Eq x y)   = show x ++ " == " ++ show y 
     show (Lt x y)   = show x ++ " < " ++ show y
     show (Gt x y)   = show x ++ " > " ++ show y
-    show (Ng x)     = "-" ++ show x
-    show (Cj fs)     = "*(" ++ showCondLst fs ++ ")"
-    show (Dj fs)     = "+(" ++ showCondLst fs ++ ")"
+    show (Ng x)     = "!" ++ show x
+    show (Cj fs)     = "^(" ++ showCondLst fs ++ ")"
+    show (Dj fs)     = "v(" ++ showCondLst fs ++ ")"
 
 showCondLst,showCondRest :: [Condition] -> String
 showCondLst [] = ""
