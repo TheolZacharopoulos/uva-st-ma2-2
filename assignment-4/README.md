@@ -67,6 +67,9 @@ and _R<sup>s+</sup> = {(a,a),(a,b),(b,a),(b,b)}_
 and _R<sup>+s</sup> =/= R<sup>s+</sup>_
 
 ## 4.9 (Bonus)
-See `Statement.hs`, only Show function is done, parse and tests are missing.
+See `Statement.hs`
+- Show functions for `Expr`, `Condition`, `Statement`
+- Random Statement generator using `quickCheck`
+- *TODO* **parser**
 
-**Time spend 1 hour**
+**Time spend 2 hour**
