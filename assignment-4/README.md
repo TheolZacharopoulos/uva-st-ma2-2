@@ -8,7 +8,7 @@ tests for the module.
 *The test reports have been written as comments in the test files.*
 
 ## 4.1
-* *TODO*
+I don't understand example 4.6 in the book. I am not entirely sure what it is trying to proof, and as such I cannot follow the proof.
 
 **Time spent: 2 hours**
 
