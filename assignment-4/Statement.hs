@@ -17,7 +17,7 @@ data Expr = I Integer
 
 instance Show Expr where
     show (I x) = show x
-    show (V x) = show x
+    show (V x) = "$" ++ (filter (/='"') (show x))
     show (Add x y) = show x ++ " + " ++ show y
     show (Subtr x y) = show x ++ " - " ++ show y
     show (Mult x y) = show x ++ " * " ++ show y
@@ -32,7 +32,7 @@ data Condition = Prp Var
                deriving (Eq)
 
 instance Show Condition where
-    show (Prp x)    = show x
+    show (Prp x)    = "$" ++ (filter (/='"') (show x))
     show (Eq x y)   = show x ++ " == " ++ show y 
     show (Lt x y)   = show x ++ " < " ++ show y
     show (Gt x y)   = show x ++ " > " ++ show y
@@ -53,7 +53,7 @@ data Statement = Ass Var Expr
                deriving (Eq)
 
 instance Show Statement where
-    show (Ass v x)      = show v ++ " = " ++ show x ++ "\n"
+    show (Ass v x)      = "$" ++ (filter (/='"') (show v)) ++ " = " ++ show x ++ "\n"
     show (Cond c x y)   = "if (" ++ show c ++ ")" ++ " {\n" ++ 
                            showTabbed x ++ "} " ++ 
                           "else {\n" ++ showTabbed y ++ "}"
@@ -105,10 +105,10 @@ sizedArbitraryCondition = sized rndCondition
 
 rndCondition :: Integral a => a -> Gen Condition
 rndCondition 0 =
-    liftM Prp (listOf (elements ['a' ..'z']))
+    liftM Prp (listOf1 (elements ['a' ..'z']))
 rndCondition n | n > 0 =
     frequency [
-        (10, liftM Prp (listOf (elements ['a' ..'z']))),
+        (10, liftM Prp (listOf1 (elements ['a' ..'z']))),
         (9, liftM2 Eq arbitrary arbitrary),
         (9, liftM2 Lt arbitrary arbitrary),
         (9, liftM2 Gt arbitrary arbitrary),
@@ -129,7 +129,7 @@ sizedArbitraryStatement = sized rndStatement
 
 rndStatement :: Integral a => a -> Gen Statement
 rndStatement 0 =
-    liftM2 Ass (listOf (elements ['a' ..'z'])) arbitrary
+    liftM2 Ass (listOf1 (elements ['a' ..'z'])) arbitrary
 
 rndStatement n | n > 0 =
     frequency [
