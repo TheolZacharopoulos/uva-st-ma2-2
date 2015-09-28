@@ -65,19 +65,24 @@
   showSudoku :: Sudoku -> IO()
   showSudoku = showGrid . sud2grid
 
+  bl' :: [[Int]] -> Int -> [Int]
+  bl' b x = concat $ filter (elem x) b
+
   bl :: Int -> [Int]
-  bl x = concat $ filter (elem x) blocks 
+  bl = bl' blocks 
 
   nbl :: Int -> [Int]
-  nbl x = concat $ filter (elem x) nblocks 
+  nbl x = bl' nblocks
+
+  subGrid' :: (Int -> [Int]) -> Sudoku -> (Row,Column) -> [Value]
+  subGrid' fbl s (r,c) = 
+    [ s (r',c') | r' <- fbl r, c' <- fbl c ]
 
   subGrid :: Sudoku -> (Row,Column) -> [Value]
-  subGrid s (r,c) = 
-    [ s (r',c') | r' <- bl r, c' <- bl c ]
+  subGrid = subGrid' bl
 
   nrcSubGrid :: Sudoku -> (Row,Column) -> [Value]
-  nrcSubGrid s (r,c) = 
-    [ s (r',c') | r' <- nbl r, c' <- nbl c ]
+  nrcSubGrid = subGrid' nbl
 
   freeInSeq :: [Value] -> [Value]
   freeInSeq seq = values \\ seq 
