@@ -120,7 +120,10 @@
   freeAtPos s (r,c) xs =
       let ys = filter (elem (r,c)) xs 
     in 
-      foldl intersect values (map ((values \\) . map s) ys)
+      if null ys then
+        values
+      else
+        foldl1 intersect (map ((values \\) . map s) ys)
 
   freeAtPosAll :: Sudoku -> Position -> [Value]
   freeAtPosAll s (r,c) = 
