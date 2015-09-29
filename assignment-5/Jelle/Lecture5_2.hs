@@ -36,8 +36,12 @@
   shareColumn (_,y1) (_,y2) = y1 == y2
 
   shareBlock :: Position -> Position -> Bool
-  shareBlock pos1 pos2 = any (\c -> pos1 `elem` c && pos2 `elem` c) blockConstrnt
-
+  shareBlock (r1,c1) (r2,c2) = 
+    r2 `elem` blockR1 && c2 `elem` blockC1
+      where
+        blockR1 = concat $ filter (elem r1) blocks
+        blockC1 = concat $ filter (elem c1) blocks
+  
   shares :: [Position -> Position -> Bool]
   shares = [shareRow, shareColumn, shareBlock]
 
