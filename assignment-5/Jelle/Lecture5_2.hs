@@ -21,6 +21,14 @@
   blocks :: [[Int]]
   blocks = [[1..3],[4..6],[7..9]]
 
+  rowConstrnt, columnConstrnt, blockConstrnt :: Constrnt
+  rowConstrnt = [[(r,c)| c <- values ] | r <- values ]
+  columnConstrnt = [[(r,c)| r <- values ] | c <- values ]
+  blockConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- blocks, b2 <- blocks ]
+
+  constrnts :: [Constrnt]
+  constrnts = [rowConstrnt, columnConstrnt, blockConstrnt]
+
   showVal :: Value -> String
   showVal 0 = " "
   showVal d = show d
@@ -65,12 +73,6 @@
 
   showSudoku :: Sudoku -> IO()
   showSudoku = showGrid . sud2grid
-
-  rowConstrnt = [[(r,c)| c <- values ] | r <- values ]
-  columnConstrnt = [[(r,c)| r <- values ] | c <- values ]
-  blockConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- blocks, b2 <- blocks ]
-
-  constrnts = [rowConstrnt, columnConstrnt, blockConstrnt]
 
   freeAtPos :: Sudoku -> Position -> Constrnt -> [Value]
   freeAtPos s (r,c) xs = 
