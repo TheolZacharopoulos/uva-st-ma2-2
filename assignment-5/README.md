@@ -37,12 +37,10 @@ modified version `profile_Lecture5_2.sh`. To profile both, run
 `./profile_Lecture5_2_original.sh && ./profile_Lecture5_2.sh`
 
 This will generate `Lecture5_2_original.prof` and `Lecture5_2.prof`. On our
-systems the results are about equal, with half a second faster performance for
-the `Lecture5_2_original.hs`.
+systems the timings are about equal, the differences are neglible.
 
-The performance for the modified version was even worse before but we added some
-optimizations that reduce extensibility a tiny bit. Comments for that are in
-the `Lecture5_2.hs` file.
+The performance for the modified version was worse before but we added some
+(premature?) optimisations that reduce extensibility slightly, but boosts performance up to the original lecture5.hs standards. We sacrifice extensibility as we now require an implementation of a share function alongside the Constrnt representation for new constraints, for technical details see lecture5_2.hs.
 
 **Time spent: 6 hours**
 
@@ -58,5 +56,7 @@ See `testMinimal.hs`. To run it, open it in GHCI and execute `runTests`.
 
 ## 5.5
 
-**Time spent: n hours**
+Note, the generator takes some time to minimize the generated puzzle, so it might take some minutes before the first puzzle is generated.
+
+**Time spent: 3 hours**
 
