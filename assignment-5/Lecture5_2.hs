@@ -6,16 +6,28 @@
   import System.Random
 
   type Row    = Int 
-  type Column = Int 
+  type Column = Int
+  type Position = (Row,Column)
+  type Constrnt = [[Position]]
   type Value  = Int
   type Grid   = [[Value]]
   
-  positions, values :: [Int]
-  positions = [1..9]
+  positions :: [Position]
+  positions = [(r,c) | r <- [1..9], c <- [1..9]]
+  
+  values :: [Int]
   values    = [1..9] 
   
   blocks :: [[Int]]
   blocks = [[1..3],[4..6],[7..9]]
+
+  rowConstrnt, columnConstrnt, blockConstrnt :: Constrnt
+  rowConstrnt = [[(r,c)| c <- values ] | r <- values ]
+  columnConstrnt = [[(r,c)| r <- values ] | c <- values ]
+  blockConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- blocks, b2 <- blocks ]
+
+  constrnts :: [Constrnt]
+  constrnts = [rowConstrnt, columnConstrnt, blockConstrnt]
 
   showVal :: Value -> String
   showVal 0 = " "
@@ -47,7 +59,7 @@
       showRow gs; showRow hs; showRow is
       putStrLn ("+-------+-------+-------+")
 
-  type Sudoku = (Row,Column) -> Value
+  type Sudoku = Position -> Value
 
   sud2grid :: Sudoku -> Grid
   sud2grid s = 
@@ -62,56 +74,25 @@
   showSudoku :: Sudoku -> IO()
   showSudoku = showGrid . sud2grid
 
-  bl :: Int -> [Int]
-  bl x = concat $ filter (elem x) blocks 
+  freeAtPos :: Sudoku -> Position -> Constrnt -> [Value]
+  freeAtPos s (r,c) xs = 
+      let ys = filter (elem (r,c)) xs 
+    in 
+      foldl1 intersect (map ((values \\) . map s) ys)
 
-  subGrid :: Sudoku -> (Row,Column) -> [Value]
-  subGrid s (r,c) = 
-    [ s (r',c') | r' <- bl r, c' <- bl c ]
+  freeAtPosAll :: Sudoku -> Position -> [Value]
+  freeAtPosAll s (r,c) = 
+    foldl1 intersect (map (freeAtPos s (r,c)) constrnts)
 
-  freeInSeq :: [Value] -> [Value]
-  freeInSeq seq = values \\ seq 
-
-  freeInRow :: Sudoku -> Row -> [Value]
-  freeInRow s r = 
-    freeInSeq [ s (r,i) | i <- positions  ]
-
-  freeInColumn :: Sudoku -> Column -> [Value]
-  freeInColumn s c = 
-    freeInSeq [ s (i,c) | i <- positions ]
-
-  freeInSubgrid :: Sudoku -> (Row,Column) -> [Value]
-  freeInSubgrid s (r,c) = freeInSeq (subGrid s (r,c))
-
-  freeAtPos :: Sudoku -> (Row,Column) -> [Value]
-  freeAtPos s (r,c) = 
-    (freeInRow s r) 
-     `intersect` (freeInColumn s c) 
-     `intersect` (freeInSubgrid s (r,c)) 
+  sharesConstrnt :: Position -> Position -> Bool
+  sharesConstrnt pos1 pos2 = 
+    any (==True) $ map (\c -> (pos1 `elem` c) && (pos2 `elem` c)) (concat constrnts)
 
   injective :: Eq a => [a] -> Bool
   injective xs = nub xs == xs
 
-  rowInjective :: Sudoku -> Row -> Bool
-  rowInjective s r = injective vs where 
-     vs = filter (/= 0) [ s (r,i) | i <- positions ]
-
-  colInjective :: Sudoku -> Column -> Bool
-  colInjective s c = injective vs where 
-     vs = filter (/= 0) [ s (i,c) | i <- positions ]
-
-  subgridInjective :: Sudoku -> (Row,Column) -> Bool
-  subgridInjective s (r,c) = injective vs where 
-     vs = filter (/= 0) (subGrid s (r,c))
-
   consistent :: Sudoku -> Bool
-  consistent s = and $
-                 [ rowInjective s r |  r <- positions ]
-                  ++
-                 [ colInjective s c |  c <- positions ]
-                  ++
-                 [ subgridInjective s (r,c) | 
-                      r <- [1,4,7], c <- [1,4,7]]
+  consistent s = and $ map injective (concat constrnts)  
 
   extend :: Sudoku -> ((Row,Column),Value) -> Sudoku
   extend = update
@@ -138,18 +119,11 @@
   length3rd :: (a,b,[c]) -> (a,b,[c]) -> Ordering
   length3rd (_,_,zs) (_,_,zs') = compare (length zs) (length zs')
 
-  prune :: (Row,Column,Value) 
-        -> [Constraint] -> [Constraint]
+  prune :: (Row,Column,Value) -> [Constraint] -> [Constraint]
   prune _ [] = []
   prune (r,c,v) ((x,y,zs):rest)
-    | r == x = (x,y,zs\\[v]) : prune (r,c,v) rest
-    | c == y = (x,y,zs\\[v]) : prune (r,c,v) rest
-    | sameblock (r,c) (x,y) = 
-          (x,y,zs\\[v]) : prune (r,c,v) rest
+    | sharesConstrnt (r,c) (x,y) = (x,y,zs\\[v]) : prune (r,c,v) rest
     | otherwise = (x,y,zs) : prune (r,c,v) rest
-  
-  sameblock :: (Row,Column) -> (Row,Column) -> Bool
-  sameblock (r,c) (x,y) = bl r == bl x && bl c == bl y 
 
   initNode :: Grid -> [Node]
   initNode gr = let s = grid2sud gr in 
@@ -157,13 +131,11 @@
                 else [(s, constraints s)]
 
   openPositions :: Sudoku -> [(Row,Column)]
-  openPositions s = [ (r,c) | r <- positions,  
-                              c <- positions, 
-                              s (r,c) == 0 ]
+  openPositions s = [ pos | pos <- positions, s (pos) == 0 ]
 
   constraints :: Sudoku -> [Constraint] 
   constraints s = sortBy length3rd 
-      [(r,c, freeAtPos s (r,c)) | 
+      [(r,c, freeAtPosAll s (r,c)) | 
                          (r,c) <- openPositions s ]
 
   data Tree a = T a [Tree a] deriving (Eq,Ord,Show)
@@ -333,8 +305,7 @@
     where n' = eraseN n (r,c)
 
   filledPositions :: Sudoku -> [(Row,Column)]
-  filledPositions s = [ (r,c) | r <- positions,  
-                                c <- positions, s (r,c) /= 0 ]
+  filledPositions s = [ pos | pos <- positions, s (pos) /= 0 ]
 
   genProblem :: Node -> IO Node
   genProblem n = do ys <- randomize xs
