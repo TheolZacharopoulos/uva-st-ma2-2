@@ -31,23 +31,27 @@ during compilation. The resulting executable will dump its performance
 profile to a `*.prof` file.
 
 To compile and profile the old version and the new version run the
-corresponding `.sh` scripts. The old version is `profile_Lecture5.sh`, the
-new version `profile_Lecture5_2.sh`. To profile both, run
+corresponding `.sh` scripts. The original version is
+`profile_Lecture5_2_original.sh`, the modified version `profile_Lecture5_2.sh`.
+To profile both, run
 
-`./profile_Lecture5.sh && ./profile_Lecture5_2.sh`
+`./profile_Lecture5_2_original.sh && ./profile_Lecture5_2.sh`
 
-This will generate `Lecture5.prof` and `Lecture5_2.prof`. On our systems
-the results are about equal, with half a second faster performance for the
-original `Lecture5.hs`.
+This will generate `Lecture5_2_original.prof` and `Lecture5_2.prof`. On our
+systems the results are about equal, with half a second faster performance for
+the `Lecture5_2_original.hs`.
 
-The performance for the modified version was worse but we added some
-optimizations. Comments for that are in the `Lecture5_2.hs` file.
+The performance for the modified version was even worse before but we added some
+optimizations that reduce extensibility a tiny bit. Comments for that are in
+the `Lecture5_2.hs` file.
 
 **Time spent: 6 hours**
 
 ## 5.3
 
-**Time spent: 1 hour**
+See `testMinimal.hs`. To run it, open it in GHCI and execute `runTests`.
+
+**Time spent: 2 hour**
 
 ## 5.4
 
