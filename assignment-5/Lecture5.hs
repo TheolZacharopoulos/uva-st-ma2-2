@@ -350,4 +350,4 @@ run = do
 main :: IO ()
 main = do
     setStdGen $ mkStdGen 0
-    sequence_ $ take 5 $ repeat run
+    sequence_ $ take 10 $ repeat run

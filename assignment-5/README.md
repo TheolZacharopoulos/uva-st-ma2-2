@@ -4,12 +4,46 @@
 *The test reports have been written as comments in the test files.*
 
 ## 5.1
+Solver: `Lecture5_1.hs`
 
-**Time spent: n hours**
+```
++-------+-------+-------+
+| 4 7 8 | 3 9 2 | 6 1 5 |
+| 6 1 9 | 7 5 8 | 3 2 4 |
+| 2 3 5 | 4 1 6 | 9 7 8 |
++-------+-------+-------+
+| 7 2 6 | 8 3 5 | 1 4 9 |
+| 8 9 1 | 6 2 4 | 7 5 3 |
+| 3 5 4 | 9 7 1 | 2 8 6 |
++-------+-------+-------+
+| 5 6 7 | 2 8 9 | 4 3 1 |
+| 9 8 3 | 1 4 7 | 5 6 2 |
+| 1 4 2 | 5 6 3 | 8 9 7 |
++-------+-------+-------+
+```
+
+**Time spent: 2 hours**
 
 ## 5.2
 
-**Time spent: n hours**
+To compare the two versions we used Haskell's built-in `-prof` option
+during compilation. The resulting executable will dump its performance
+profile to a `*.prof` file.
+
+To compile and profile the old version and the new version run the
+corresponding `.sh` scripts. The old version is `profile_Lecture5.sh`, the
+new version `profile_Lecture5_2.sh`. To profile both, run
+
+`./profile_Lecture5.sh && ./profile_Lecture5_2.sh`
+
+This will generate `Lecture5.prof` and `Lecture5_2.prof`. On our systems
+the results are about equal, with half a second faster performance for the
+original `Lecture5.hs`.
+
+The performance for the modified version was worse but we added some
+optimizations. Comments for that are in the `Lecture5_2.hs` file.
+
+**Time spent: 6 hours**
 
 ## 5.3
 
@@ -22,3 +56,4 @@
 ## 5.5
 
 **Time spent: n hours**
+

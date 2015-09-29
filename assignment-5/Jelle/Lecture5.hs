@@ -381,4 +381,4 @@
   main = do 
       showSudoku (grid2sud assignment1)
       r <- rsolveNs $ initNode assignment1
-      showNode r
+      showNode $ head r
