@@ -68,7 +68,7 @@
   grid2sud :: Grid -> Sudoku
   grid2sud gr = \ (r,c) -> pos gr (r,c) 
     where 
-    pos :: [[a]] -> (Row,Column) -> a 
+    pos :: [[a]] -> Position -> a 
     pos gr (r,c) = (gr !! (r-1)) !! (c-1)
 
   showSudoku :: Sudoku -> IO()
@@ -130,7 +130,7 @@
                 if (not . consistent) s then [] 
                 else [(s, constraints s)]
 
-  openPositions :: Sudoku -> [(Row,Column)]
+  openPositions :: Sudoku -> [Position]
   openPositions s = [ pos | pos <- positions, s (pos) == 0 ]
 
   constraints :: Sudoku -> [Constraint] 
@@ -290,21 +290,21 @@
     singleton [x] = True
     singleton (x:y:zs) = False
 
-  eraseS :: Sudoku -> (Row,Column) -> Sudoku
+  eraseS :: Sudoku -> Position -> Sudoku
   eraseS s (r,c) (x,y) | (r,c) == (x,y) = 0
                        | otherwise      = s (x,y)
 
-  eraseN :: Node -> (Row,Column) -> Node
+  eraseN :: Node -> Position -> Node
   eraseN n (r,c) = (s, constraints s) 
     where s = eraseS (fst n) (r,c) 
 
-  minimalize :: Node -> [(Row,Column)] -> Node
+  minimalize :: Node -> [Position] -> Node
   minimalize n [] = n
   minimalize n ((r,c):rcs) | uniqueSol n' = minimalize n' rcs
                            | otherwise    = minimalize n  rcs
     where n' = eraseN n (r,c)
 
-  filledPositions :: Sudoku -> [(Row,Column)]
+  filledPositions :: Sudoku -> [Position]
   filledPositions s = [ pos | pos <- positions, s (pos) /= 0 ]
 
   genProblem :: Node -> IO Node
