@@ -21,13 +21,24 @@
   blocks :: [[Int]]
   blocks = [[1..3],[4..6],[7..9]]
 
-  rowConstrnt, columnConstrnt, blockConstrnt :: Constrnt
+------------------------------------------Constraint representations--------------------------------------
+  -- In order to add a new constraint, add a new Constrnt and add it to the list constrnts.
+  -- Also, implement a new share (two positions share this constraint) function for the new constraint.
+  -- And finally, add this share function to the list shares.
+  -- The share function is required as this drastically improves the efficiency of the overall program.
+  --    Drastically here means: to the level of http://homepages.cwi.nl/~jve/courses/15/testing/lab/Lecture5.hs
+  rowConstrnt:: Constrnt
   rowConstrnt = [[(r,c)| c <- values ] | r <- values ]
+  
+  columnConstrnt :: Constrnt
   columnConstrnt = [[(r,c)| r <- values ] | c <- values ]
+  
+  blockConstrnt :: Constrnt
   blockConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- blocks, b2 <- blocks ]
 
   constrnts :: [Constrnt]
   constrnts = [rowConstrnt, columnConstrnt, blockConstrnt]
+
 
   shareRow :: Position -> Position -> Bool
   shareRow (x1,_) (x2,_) = x1 == x2
@@ -39,11 +50,13 @@
   shareBlock (r1,c1) (r2,c2) = 
     r2 `elem` blockR1 && c2 `elem` blockC1
       where
-        blockR1 = concat $ filter (elem r1) blocks
-        blockC1 = concat $ filter (elem c1) blocks
+        bl x = concat $ filter (elem x) blocks
+        blockR1 = bl r1
+        blockC1 = bl c1
   
   shares :: [Position -> Position -> Bool]
   shares = [shareRow, shareColumn, shareBlock]
+----------------------------------------------------------------------------------------------------------
 
   showVal :: Value -> String
   showVal 0 = " "
