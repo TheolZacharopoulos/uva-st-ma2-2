@@ -365,6 +365,5 @@
 
   main :: IO ()
   main = do
-    setStdGen $ mkStdGen 0
     ss <- sequence $ take 5 $ repeat generateSudoku
     mapM_ showSudoku ss
