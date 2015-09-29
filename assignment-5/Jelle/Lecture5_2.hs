@@ -29,6 +29,18 @@
   constrnts :: [Constrnt]
   constrnts = [rowConstrnt, columnConstrnt, blockConstrnt]
 
+  shareRow :: Position -> Position -> Bool
+  shareRow (x1,_) (x2,_) = x1 == x2
+
+  shareColumn :: Position -> Position -> Bool
+  shareColumn (_,y1) (_,y2) = y1 == y2
+
+  shareBlock :: Position -> Position -> Bool
+  shareBlock pos1 pos2 = any (\c -> pos1 `elem` c && pos2 `elem` c) blockConstrnt
+
+  shares :: [Position -> Position -> Bool]
+  shares = [shareRow, shareColumn, shareBlock]
+
   showVal :: Value -> String
   showVal 0 = " "
   showVal d = show d
@@ -86,7 +98,8 @@
 
   sharesConstrnt :: Position -> Position -> Bool
   sharesConstrnt pos1 pos2 = 
-    any (\c -> (pos1 `elem` c) && (pos2 `elem` c)) (concat constrnts)
+    any (\s -> s pos1 pos2) shares
+    --any (\c -> (pos1 `elem` c) && (pos2 `elem` c)) (concat constrnts)
 
   injective :: Eq a => [a] -> Bool
   injective xs = nub xs == xs
