@@ -116,7 +116,6 @@
   sharesConstrnt :: Position -> Position -> Bool
   sharesConstrnt pos1 pos2 = 
     any (\s -> s pos1 pos2) shares
-    --any (\c -> (pos1 `elem` c) && (pos2 `elem` c)) (concat constrnts)
 
   injective :: Eq a => [a] -> Bool
   injective xs = nub xs == xs
