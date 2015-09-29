@@ -1,4 +1,4 @@
-  module Lecture5
+  module Main
   
   where 
   
@@ -86,7 +86,7 @@
 
   sharesConstrnt :: Position -> Position -> Bool
   sharesConstrnt pos1 pos2 = 
-    any (==True) $ map (\c -> (pos1 `elem` c) && (pos2 `elem` c)) (concat constrnts)
+    any (\c -> (pos1 `elem` c) && (pos2 `elem` c)) (concat constrnts)
 
   injective :: Eq a => [a] -> Bool
   injective xs = nub xs == xs
@@ -312,8 +312,13 @@
                     return (minimalize n ys)
      where xs = filledPositions (fst n)
 
+  run = do
+    [r] <- rsolveNs [emptyN]
+    showNode r
+    s <- genProblem r
+    showNode s
+
   main :: IO ()
-  main = do 
-      showSudoku (grid2sud example1)
-      [r] <- rsolveNs $ initNode example1
-      showNode r
+  main = do
+    setStdGen $ mkStdGen 0
+    sequence_ $ take 5 $ repeat run
