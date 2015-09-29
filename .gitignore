@@ -9,3 +9,5 @@ cabal-dev
 *~
 .idea
 *.iml
+*.old
+*.prof
