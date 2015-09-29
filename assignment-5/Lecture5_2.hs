@@ -86,13 +86,13 @@
 
   sharesConstrnt :: Position -> Position -> Bool
   sharesConstrnt pos1 pos2 = 
-    any (==True) $ map (\c -> (pos1 `elem` c) && (pos2 `elem` c)) (concat constrnts)
+    any (\c -> (pos1 `elem` c) && (pos2 `elem` c)) (concat constrnts)
 
   injective :: Eq a => [a] -> Bool
   injective xs = nub xs == xs
 
   consistent :: Sudoku -> Bool
-  consistent s = and $ map injective (concat constrnts)  
+  consistent s = all injective (concat constrnts)  
 
   extend :: Sudoku -> ((Row,Column),Value) -> Sudoku
   extend = update
@@ -319,6 +319,6 @@
     showNode s
 
   main :: IO ()
-  main = do 
+  main = do
     setStdGen $ mkStdGen 0
     sequence_ $ take 5 $ repeat run
