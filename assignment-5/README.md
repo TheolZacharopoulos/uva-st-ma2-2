@@ -30,10 +30,9 @@ To compare the two versions we used Haskell's built-in `-prof` option
 during compilation. The resulting executable will dump its performance
 profile to a `*.prof` file.
 
-To compile and profile the old version and the new version run the
-corresponding `.sh` scripts. The original version is
-`profile_Lecture5_2_original.sh`, the modified version `profile_Lecture5_2.sh`.
-To profile both, run
+To compile and profile the original and modified version run the corresponding
+`.sh` scripts. The original version is `profile_Lecture5_2_original.sh`, the
+modified version `profile_Lecture5_2.sh`. To profile both, run
 
 `./profile_Lecture5_2_original.sh && ./profile_Lecture5_2.sh`
 
