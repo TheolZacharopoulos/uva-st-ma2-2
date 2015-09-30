@@ -40,11 +40,12 @@ This will generate `Lecture5_2_original.prof` and `Lecture5_2.prof`. On our
 systems the timings are about equal, the differences are neglible.
 
 The performance for the modified version was worse before but we added some
-(premature?) optimisations that reduce extensibility slightly, but boosts
-performance up to the original `Lecture5.hs` standards. We sacrifice
-extensibility as we now require an implementation of a share function
-alongside the `Constrnt` representation for new constraints, for technical
-details see `Lecture5_2.hs`.
+optimisations so it is on par with the original `Lecture5.hs`. For the
+record, the performance gain from the optimisations has resulted in a decrease
+in run-time by at least 50%. The price for this is an extra cost in the
+modifiability/extensibility department as we now require an implementation of a
+'share' function alongside the `Constrnt` type as the representation for new
+constraints. For technical details see `Lecture5_2.hs`.
 
 **Time spent: 6 hours**
 
