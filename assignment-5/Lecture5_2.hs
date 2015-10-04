@@ -123,8 +123,12 @@
   injective xs = nub xs == xs
 
   consistent :: Sudoku -> Bool
-  consistent s = and $ map injective (concat constrnts)  
-
+  consistent s = 
+      and $ map injective nonZeroVals
+    where 
+      vals = (map (\cs -> map s cs) (concat constrnts))  
+      nonZeroVals = map (filter (/= 0)) vals
+ 
   extend :: Sudoku -> ((Row,Column),Value) -> Sudoku
   extend = update
 

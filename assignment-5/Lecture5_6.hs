@@ -36,13 +36,8 @@
   blockConstrnt :: Constrnt
   blockConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- blocks, b2 <- blocks ]
 
-  nrcConstrnt :: Constrnt
-  nrcConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- nrc, b2 <- nrc]
-    where
-      nrc = [[2..4],[6..8]]
-
   constrnts :: [Constrnt]
-  constrnts = [rowConstrnt, columnConstrnt, blockConstrnt, nrcConstrnt]
+  constrnts = [rowConstrnt, columnConstrnt, blockConstrnt]
 
 
   shareRow :: Position -> Position -> Bool
@@ -59,16 +54,8 @@
         blockR1 = bl r1
         blockC1 = bl c1
   
-  shareNrc :: Position -> Position -> Bool
-  shareNrc (r1,c1) (r2,c2) =
-    r2 `elem` nrcR1 && c2 `elem` nrcC1
-      where
-        nrc x = concat $ filter (elem x) [[2..4],[6..8]]
-        nrcR1 = nrc r1
-        nrcC1 = nrc c1 
-
   shares :: [Position -> Position -> Bool]
-  shares = [shareRow, shareColumn, shareBlock, shareNrc]
+  shares = [shareRow, shareColumn, shareBlock]
 ----------------------------------------------------------------------------------------------------------
 
   showVal :: Value -> String
@@ -103,9 +90,6 @@
 
   type Sudoku = Position -> Value
 
-  bl :: Int -> [Int]
-  bl x = concat $ filter (elem x) blocks 
-
   sud2grid :: Sudoku -> Grid
   sud2grid s = 
     [ [ s (r,c) | c <- [1..9] ] | r <- [1..9] ] 
@@ -120,13 +104,12 @@
   showSudoku = showGrid . sud2grid
 
   freeAtPos :: Sudoku -> Position -> Constrnt -> [Value]
-  freeAtPos s (r,c) xs =
+  freeAtPos s (r,c) xs = 
       let ys = filter (elem (r,c)) xs 
     in 
-      if null ys then
-        values
-      else
-        foldl1 intersect (map ((values \\) . map s) ys)
+      if null ys
+      then values
+      else foldl1 intersect (map ((values \\) . map s) ys)
 
   freeAtPosAll :: Sudoku -> Position -> [Value]
   freeAtPosAll s (r,c) = 
@@ -266,9 +249,9 @@
               [9,0,0,0,0,0,0,0,0]]
 
   example5 :: Grid
-  example5 = [[1,0,0,0,0,0,0,0,0],
-              [0,2,0,0,0,0,0,0,0],
-              [0,0,3,0,0,0,0,0,0],
+  example5 = [[1,4,5,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,8],
+              [8,7,3,0,0,0,0,0,0],
               [0,0,0,4,0,0,0,0,0],
               [0,0,0,0,5,0,0,0,0],
               [0,0,0,0,0,6,0,0,0],
@@ -350,29 +333,28 @@
   eraseN n (r,c) = (s, constraints s) 
     where s = eraseS (fst n) (r,c) 
 
-  --------------------------------------------------------------------------------
-  -- Erase a block given coordinates in the block.
-  eraseBl :: Sudoku -> (Row,Column) -> Sudoku
-  eraseBl s (r,c) (x,y) = (foldl eraseS s (subBlockPos s (r,c))) (x,y)
-
-  -- Erase n blocks from a Sudoku  
-  eraseBls :: Sudoku -> Int -> Sudoku
-  eraseBls s 0 = s
-  eraseBls s n = foldl eraseBl s (take n blocksPos)
+  nakedSingle :: Position -> Sudoku -> Bool
+  nakedSingle p sud =
+      any (isNaked sud) (filter (elem p) (concat constrnts))
     where
-      -- A list of block positions,
-      -- Middle, Top Left, Top Right, Bot Left, Bot Right
-      blocksPos = [(6,6), (1,1), (1,9), (9,1), (9,9)]
+      isNaked :: Sudoku -> [Position] -> Bool
+      isNaked sud ps = 1 == length (values \\ (map (\pos -> sud pos) ps))
 
-  -- Erase n blocks from a Node
-  eraseBlsN :: Node -> Int -> Node
-  eraseBlsN node n = (s, constraints s)
-      where s = eraseBls (fst node) n
+  hiddenSingle :: Position -> Sudoku -> Bool
+  hiddenSingle p sud =
+      (sud p) /= 0 && 
+      any (isHidden (sud p) removedSud) (getEmptyOthers p sud)
+    where 
+      removedSud = eraseS sud p
 
-  -- Get the positions of a block from given coordinates.
-  subBlockPos :: Sudoku -> Position -> [Position]
-  subBlockPos s (r,c) = [(r',c') | r' <- (bl r), c' <- (bl c)]
-  --------------------------------------------------------------------------------
+      getEmptyOthers :: Position -> Sudoku -> [[Position]]
+      getEmptyOthers p sud =
+        map (filter (\pos -> (p /= pos) && (sud pos) == 0)) (filter (elem p) (concat constrnts)) 
+
+      isHidden :: Value -> Sudoku -> [Position] -> Bool
+      isHidden v sud ps = all (\pos -> not $ consistent (extend sud (pos, v))) ps 
+
+
 
   minimalize :: Node -> [Position] -> Node
   minimalize n [] = n
@@ -388,12 +370,13 @@
                     return (minimalize n ys)
      where xs = filledPositions (fst n)
 
-  blockEraseNumber = 5
+  run = do
+    [r] <- rsolveNs [emptyN]
+    showNode r
+    s <- genProblem r
+    showNode s
 
   main :: IO ()
-  main = do 
-      [r] <- rsolveNs [emptyN]
-      showNode r
-      let sb = eraseBlsN r blockEraseNumber
-      s <- genProblem sb
-      showNode s
+  main = do
+    setStdGen $ mkStdGen 0
+    sequence_ $ take 10 $ repeat run
