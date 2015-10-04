@@ -343,22 +343,21 @@
   hiddenSingle :: Position -> Sudoku -> Bool
   hiddenSingle p sud =
       (sud p) /= 0 && 
-      any (isHidden (sud p) removedSud) (getEmptyOthers p sud)
+      any (isHidden (sud p) removedSud) (emptyOthers)
     where 
       removedSud = eraseS sud p
-
-      getEmptyOthers :: Position -> Sudoku -> [[Position]]
-      getEmptyOthers p sud =
-        map (filter (\pos -> (p /= pos) && (sud pos) == 0)) (filter (elem p) (concat constrnts)) 
+      sharedConstrnts = (filter (elem p) (concat constrnts))
+      emptyOthers = map (filter (\pos -> (p /= pos) && (sud pos) == 0)) sharedConstrnts
 
       isHidden :: Value -> Sudoku -> [Position] -> Bool
       isHidden v sud ps = all (\pos -> not $ consistent (extend sud (pos, v))) ps 
 
 
-
   minimalize :: Node -> [Position] -> Node
   minimalize n [] = n
-  minimalize n ((r,c):rcs) | uniqueSol n' = minimalize n' rcs
+  minimalize n ((r,c):rcs) | uniqueSol n' &&
+                             (nakedSingle (r,c) (fst n) || hiddenSingle (r,c) (fst n))  
+                              = minimalize n' rcs
                            | otherwise    = minimalize n  rcs
     where n' = eraseN n (r,c)
 
@@ -371,10 +370,10 @@
      where xs = filledPositions (fst n)
 
   run = do
-    [r] <- rsolveNs [emptyN]
-    showNode r
-    s <- genProblem r
-    showNode s
+      [r] <- rsolveNs [emptyN]
+      showNode r
+      s <- genProblem r
+      showNode s
 
   main :: IO ()
   main = do
