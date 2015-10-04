@@ -360,22 +360,63 @@
       isHidden :: Value -> Sudoku -> [Position] -> Bool
       isHidden v sud ps = all (\pos -> not $ consistent (extend sud (pos, v))) ps 
 
+  findDifficultSpots :: Sudoku -> [Position]
+  findDifficultSpots s = 
+      filter (\pos -> not $ (nakedSingle pos s) || (hiddenSingle pos s)) (openPositions s)
 
   minimalize :: Node -> [Position] -> Node
   minimalize n [] = n
-  minimalize n ((r,c):rcs) | uniqueSol n' &&
-                             (nakedSingle (r,c) (fst n) || hiddenSingle (r,c) (fst n))  
-                              = minimalize n' rcs
+  minimalize n ((r,c):rcs) | uniqueSol n' = minimalize n' rcs
                            | otherwise    = minimalize n  rcs
+    where n' = eraseN n (r,c)
+
+  minimalizeOne :: Node -> [Position] -> Node
+  minimalizeOne n [] = n
+  minimalizeOne n ((r,c):rcs) | uniqueSol n' = n'
+                              | otherwise    = minimalizeOne n rcs  
     where n' = eraseN n (r,c)
 
   filledPositions :: Sudoku -> [Position]
   filledPositions s = [ pos | pos <- positions, s (pos) /= 0 ]
 
+  ---genProblem :: Node -> IO Node
+  --genProblem n = do ys <- randomize xs
+  --                  return (minimalize n ys)
+  --   where xs = filledPositions (fst n)
+
+
   genProblem :: Node -> IO Node
-  genProblem n = do ys <- randomize xs
-                    return (minimalize n ys)
-     where xs = filledPositions (fst n)
+  genProblem n = do
+      ys <- randomize xs
+      genProblemR n ys
+    where 
+      xs = filledPositions (fst n)
+
+  -- Generator for hard puzzles, tries to avoid the possible application of SiSuS
+  -- (Pelánek 2014) by applying the following algorithm:
+  -- 1: Find difficult spots in the sudoku (those that cannot be immediately solved with SiSuS)
+  -- 2: Try to minimize (remove while maintaining unique solution) those spots
+  -- 3: if successful, and thus something changed, go back to 1 
+  -- 4: else,
+  -- 5:    minimize and remove one other spot on the field
+  -- 6:    if successful, and thus something changed, go back to 1
+  -- 7:    else, return sudoku
+  genProblemR :: Node -> [Position] -> IO Node
+  genProblemR n ps = do
+      let diffSpots = intersect (findDifficultSpots (fst n)) ps 
+      randomizedSpots <- randomize diffSpots
+      let n2 = minimalize n randomizedSpots
+      let ps2 = (ps \\ diffSpots)
+
+      if any (\pos -> (fst n) pos /= (fst n2) pos) diffSpots then do
+        genProblemR n2 ps2
+      else do
+        let n3 = minimalizeOne n ps2
+
+        if any (\pos -> (fst n) pos /= (fst n3) pos) ps2 then do
+          genProblemR n3 (ps2 \\ (openPositions (fst n3)))
+        else do
+          return n3
 
   run = do
       [r] <- rsolveNs [emptyN]
