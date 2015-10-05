@@ -36,13 +36,8 @@
   blockConstrnt :: Constrnt
   blockConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- blocks, b2 <- blocks ]
 
-  nrcConstrnt :: Constrnt
-  nrcConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- nrc, b2 <- nrc]
-    where
-      nrc = [[2..4],[6..8]]
-
   constrnts :: [Constrnt]
-  constrnts = [rowConstrnt, columnConstrnt, blockConstrnt, nrcConstrnt]
+  constrnts = [rowConstrnt, columnConstrnt, blockConstrnt]
 
 
   shareRow :: Position -> Position -> Bool
@@ -59,16 +54,8 @@
         blockR1 = bl r1
         blockC1 = bl c1
   
-  shareNrc :: Position -> Position -> Bool
-  shareNrc (r1,c1) (r2,c2) =
-    r2 `elem` nrcR1 && c2 `elem` nrcC1
-      where
-        nrc x = concat $ filter (elem x) [[2..4],[6..8]]
-        nrcR1 = nrc r1
-        nrcC1 = nrc c1 
-
   shares :: [Position -> Position -> Bool]
-  shares = [shareRow, shareColumn, shareBlock, shareNrc]
+  shares = [shareRow, shareColumn, shareBlock]
 ----------------------------------------------------------------------------------------------------------
 
   showVal :: Value -> String
@@ -103,9 +90,6 @@
 
   type Sudoku = Position -> Value
 
-  bl :: Int -> [Int]
-  bl x = concat $ filter (elem x) blocks 
-
   sud2grid :: Sudoku -> Grid
   sud2grid s = 
     [ [ s (r,c) | c <- [1..9] ] | r <- [1..9] ] 
@@ -120,13 +104,12 @@
   showSudoku = showGrid . sud2grid
 
   freeAtPos :: Sudoku -> Position -> Constrnt -> [Value]
-  freeAtPos s (r,c) xs =
+  freeAtPos s (r,c) xs = 
       let ys = filter (elem (r,c)) xs 
     in 
-      if null ys then
-        values
-      else
-        foldl1 intersect (map ((values \\) . map s) ys)
+      if null ys
+      then values
+      else foldl1 intersect (map ((values \\) . map s) ys)
 
   freeAtPosAll :: Sudoku -> Position -> [Value]
   freeAtPosAll s (r,c) = 
@@ -350,33 +333,39 @@
   eraseN n (r,c) = (s, constraints s) 
     where s = eraseS (fst n) (r,c) 
 
-  --------------------------------------------------------------------------------
-  -- Erase a block given coordinates in the block.
-  eraseBl :: Sudoku -> (Row,Column) -> Sudoku
-  eraseBl s (r,c) (x,y) = (foldl eraseS s (subBlockPos s (r,c))) (x,y)
-
-  -- Erase n blocks from a Sudoku  
-  eraseBls :: Sudoku -> Int -> Sudoku
-  eraseBls s 0 = s
-  eraseBls s n = foldl eraseBl s (take n blocksPos)
+  -- One of the two easy for humans to apply techniques from (Pelánek 2014).
+  -- Checks whether the position in the suduko is naked. In other words:
+  -- one of the constraints allow for no other value as all other values are taken.
+  nakedSingle :: Position -> Sudoku -> Bool
+  nakedSingle p sud =
+      any (isNaked sud) (filter (elem p) (concat constrnts))
     where
-      -- A list of block positions,
-      -- Middle, Top Left, Top Right, Bot Left, Bot Right
-      blocksPos = [(6,6), (1,1), (1,9), (9,1), (9,9)]
+      isNaked :: Sudoku -> [Position] -> Bool
+      isNaked sud ps = 1 == length (values \\ (map (\pos -> sud pos) ps))
 
-  -- Erase n blocks from a Node
-  eraseBlsN :: Node -> Int -> Node
-  eraseBlsN node n = (s, constraints s)
-      where s = eraseBls (fst node) n
+  -- One of the two easy for humans to apply techniques from (Pelánek 2014).
+  -- Checks whether the position in the sudoku is hidden. In other words:
+  -- whether the value at position cannot be entered at any other position in
+  -- some constraint, as that would result in an inconsistent sudoku.
+  -- Precondition: Position must already be filled!
+  hiddenSingle :: Position -> Sudoku -> Bool
+  hiddenSingle p sud =
+      (sud p) /= 0 && 
+      any (isHidden (sud p) removedSud) (emptyOthers)
+    where 
+      removedSud = eraseS sud p
+      sharedConstrnts = (filter (elem p) (concat constrnts))
+      emptyOthers = map (filter (\pos -> (p /= pos) && (sud pos) == 0)) sharedConstrnts
 
-  -- Get the positions of a block from given coordinates.
-  subBlockPos :: Sudoku -> Position -> [Position]
-  subBlockPos s (r,c) = [(r',c') | r' <- (bl r), c' <- (bl c)]
-  --------------------------------------------------------------------------------
+      isHidden :: Value -> Sudoku -> [Position] -> Bool
+      isHidden v sud ps = all (\pos -> not $ consistent (extend sud (pos, v))) ps 
+
 
   minimalize :: Node -> [Position] -> Node
   minimalize n [] = n
-  minimalize n ((r,c):rcs) | uniqueSol n' = minimalize n' rcs
+  minimalize n ((r,c):rcs) | uniqueSol n' &&
+                             (nakedSingle (r,c) (fst n) || hiddenSingle (r,c) (fst n))  
+                              = minimalize n' rcs
                            | otherwise    = minimalize n  rcs
     where n' = eraseN n (r,c)
 
@@ -388,12 +377,13 @@
                     return (minimalize n ys)
      where xs = filledPositions (fst n)
 
-  blockEraseNumber = 5
-
-  main :: IO ()
-  main = do 
+  run = do
       [r] <- rsolveNs [emptyN]
       showNode r
-      let sb = eraseBlsN r blockEraseNumber
-      s <- genProblem sb
+      s <- genProblem r
       showNode s
+
+  main :: IO ()
+  main = do
+    setStdGen $ mkStdGen 0
+    sequence_ $ take 10 $ repeat run

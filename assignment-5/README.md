@@ -105,6 +105,58 @@ An example of *Five* blocks removed:
 
 ## 5.5
 
-Note, the generator takes some time to minimize the generated puzzle, so it might take some minutes before the first puzzle is generated.
+Note, the generator takes some time to minimize the generated puzzle, so it 
+might take some minutes before the first puzzle is generated.
 
 **Time spent: 3 hours**
+
+## 5.6
+
+We can use the proposed techniques from (Pelánek 2014) in order to classify 
+puzzles according to diffiulty to solve from a human perspective. Particularly
+promosing according to (Pelánek 2014) are the application of just two simple 
+techniques: naked single technique and hidden single technique. The metric then
+includes the number of steps necessary to refute a decision, whenever a decision
+is required. A decision is required iff both techniques fail.
+As an alternative (Pelánek 2014) also suggests a particular form of constraint
+relaxation. This method slightly underperforms but requires no specific sudoku
+techniques. 
+
+In order to generate easy puzzles, we can use the classification methods from 
+(Pelánek 2014). Because the constraint relaxation underperforms somewhat and 
+the two-techniques (SiSuS) is easier to implement given the provided framework, 
+we chose to take the former into account for generation.
+Our implementation works as follows: rather than removing tokens from the
+sudoku puzzle iff the puzzle remains minimal, we now remove tokens from the
+sudoku puzzle iff the puzzle remains minimal and one of the SiSuS techniques
+can be applied to retrieve the just removed token.
+
+In order to generate hard puzzles, we effectively take the negation of the
+above technique. Instead of always requiring one of the SiSus techniques
+to be applicable, we instead prefer it not to be. Prefer is the keyword here
+as it is sometimes not possible to remove any of such spots, but after removing
+another spot, new difficult spots may appear. 
+The (implemented) algorithm thus goes as follows:
+
+- 1: Find difficult spots in the sudoku (those that cannot be immediately solved with SiSuS)
+- 2: Try to minimize (remove while maintaining unique solution) those spots
+- 3: if successful, and thus something changed, go back to 1 
+- 4: else,
+- 5:    minimize and remove one other spot on the field
+- 6:    if successful, and thus something changed, go back to 1
+- 7:    else, return sudoku
+
+Some optimization that we partially apply is not checking the same spots in
+the sudoku again in the generation, we do this by keeping a list of visited
+locations. We do this only partially as the list is not updated for step 5.
+
+Finally, in checking this, one can apply the other technique from (Pelánek 2014),
+the constraint relaxation technique. As SiSuS is extensively used in the
+generation part, it seems unwise to test using the same technique.
+
+Discussion: During the generation we have not accounted for the number of steps
+to refute a decision. We thought the implementation of such an algorithm would
+increase the scope of this assignment too much.
+
+**Time spent: 5 hours (excl. 1 hour reading)**
+
