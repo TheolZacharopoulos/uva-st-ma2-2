@@ -45,5 +45,7 @@ prime_tests_F k n = do
   return (all (\ a -> exM a (n-1) n == 1) as)
 
 test_fermat k = do
-  composite_test <- (mapM (prime_tests_F k) [1..10])
-  return $ findIndex (== True) composite_test
+  composite_test <- (mapM (prime_tests_F k) (take 2000 composites))
+  let index = findIndex (== True) composite_test
+  return $ composites !! (getFromJust index)
+    where getFromJust = \ (Just v) -> v
