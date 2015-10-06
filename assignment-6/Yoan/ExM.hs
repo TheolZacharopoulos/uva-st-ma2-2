@@ -3,8 +3,6 @@ module ExM where
 import Data.List
 import System.Random
 import Lecture6
-import Data.Time
-import Data.Time.Clock.POSIX
 
 exMRecursive :: Integer -> Integer -> Integer -> Integer -> Integer
 exMRecursive base exponent modulus result =
