@@ -65,9 +65,11 @@
   ------------------------------------------------------------------
   -- Fast Version
   exM :: Integer -> Integer -> Integer -> Integer
-  exM _ _ 1       = 0
-  exM _ 0 modulus = 1
-  exM base expo modulus = if (expo `mod` 2) == 1 then (result*base) `mod` modulus else result
+  exM _ 0 modulus       = 1 `mod` modulus
+  exM base expo modulus =
+    if (expo `mod` 2) == 1 
+      then (result*base) `mod` modulus 
+      else result
     where result = exM ((base*base) `mod` modulus) (expo `div`2) modulus
   ------------------------------------------------------------------
 

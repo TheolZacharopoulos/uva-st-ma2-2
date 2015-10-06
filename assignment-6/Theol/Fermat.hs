@@ -3,7 +3,6 @@ module Fermat where
 import Lecture6Exm
 import Composites
 
--- More functional style
 test_fermat k = test_fermat' k composites
   where 
     test_fermat' k (c:cs) = do
