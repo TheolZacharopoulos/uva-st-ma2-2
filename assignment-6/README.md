@@ -21,7 +21,7 @@ See `Composites.hs`
 
 ## Exercise 4
 Run `Lecture6_4.hs` to get the least composites that pass the fermat test
-with `k \`elem\` [1..3]`. If you increase `k` the test is less likely to
+with `elem k [1..3]`. If you increase `k` the test is less likely to
 pass for false positives because it tests more numbers.
 
 ## Exercise 5
