@@ -9,5 +9,4 @@ import Control.Monad
 
 get_mersenne k m = filterM (primeMR k) m_prime_list
 	where
-		prime_list = (take m primes)
-		m_prime_list = map (\n -> (2^n)-1) prime_list
+		m_prime_list = map (\p -> (2^p)-1) (take m primes)

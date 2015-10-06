@@ -11,3 +11,9 @@ test_carmichael_mr k = primeMR' k carmichael
       (case test_res of
             True  -> return c
             False -> (primeMR' k cs))
+
+runTestMR k = do
+  xs <- sequence $ (take 100 $ repeat $ test_carmichael_mr k)
+  return $ minimum $ xs
+
+runTestsMr = mapM runTestMR [1..3]
