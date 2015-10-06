@@ -1,4 +1,4 @@
-  module Lecture6
+  module Lecture6Exm
   
   where 
   
@@ -65,7 +65,8 @@
   ------------------------------------------------------------------
   -- Fast Version
   exM :: Integer -> Integer -> Integer -> Integer
-  exM base 0 modulus = 1
+  exM _ _ 1       = 0
+  exM _ 0 modulus = 1
   exM base expo modulus = if (expo `mod` 2) == 1 then (result*base) `mod` modulus else result
     where result = exM ((base*base) `mod` modulus) (expo `div`2) modulus
   ------------------------------------------------------------------
