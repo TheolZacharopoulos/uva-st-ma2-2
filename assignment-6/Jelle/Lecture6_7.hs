@@ -28,9 +28,6 @@
   composites :: [Integer]
   composites = 1 : filter (not . isPrime) [2..]
 
-  expM ::  Integer -> Integer -> Integer -> Integer
-  expM x y = rem (x^y)
-
   modularExp :: Integer -> Integer -> Integer -> Integer
   modularExp _ 0 m = 1 `mod` m
   modularExp b e m =  
@@ -54,15 +51,45 @@
    as <- sequence $ fmap (\_-> randomRIO (1,n-1)) [1..k]
    return (all (\ a -> exM a (n-1) n == 1) as)
 
-  test_F :: Int -> IO Integer
-  test_F k = do
-    test_F_R (composites) k 1000
+  decomp :: Integer -> (Integer,Integer)
+  decomp n = decomp' (0,n) where
+    decomp' = until (odd.snd) (\ (m,n) -> (m+1,div n 2))
 
-  test_F_R :: [Integer] -> Int -> Int -> IO Integer
-  test_F_R [] _ _ = return 0
-  test_F_R (h:t) k n = do
-      testResult <- sequence $ take n $ repeat $ prime_tests_F k h
-      if any id testResult then
-        return h
+  primeMR :: Int -> Integer -> IO Bool
+  primeMR _ 2 = return True
+  primeMR 0 _ = return True
+  primeMR k n = let 
+     (r,s) = decomp (n-1) 
+     f = \ x -> takeWhile (/= 1) 
+         (map (\ j -> exM x (2^j*s) n)  [0..r])
+    in 
+     do 
+      a <- randomRIO (1, n-1) :: IO Integer
+      if exM a (n-1) n /= 1 
+        then return False 
+        else 
+          if exM a s n /= 1 && last (f a) /= (n-1) 
+            then return False
+            else primeMR (k-1) n
+
+
+  getLargeMersenne :: Integer -> Integer -> IO Integer
+  getLargeMersenne p maxDepth = do
+    if maxDepth == 0 then
+      return p
+    else do 
+      m <- getNextMersenne p
+    
+      if m /= 0 then do
+        result <- getLargeMersenne m (maxDepth - 1)
+        return result
       else
-        test_F_R t k n
+        return p
+
+  getNextMersenne :: Integer -> IO Integer
+  getNextMersenne p = do
+    isP <- primeMR (fromIntegral (2^p - 1)) 2
+    if isP then
+      return (2^p - 1)
+    else
+      return 0

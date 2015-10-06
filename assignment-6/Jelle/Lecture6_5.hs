@@ -28,9 +28,6 @@
   composites :: [Integer]
   composites = 1 : filter (not . isPrime) [2..]
 
-  expM ::  Integer -> Integer -> Integer -> Integer
-  expM x y = rem (x^y)
-
   modularExp :: Integer -> Integer -> Integer -> Integer
   modularExp _ 0 m = 1 `mod` m
   modularExp b e m =  
@@ -53,10 +50,10 @@
   prime_tests_F k n = do
    as <- sequence $ fmap (\_-> randomRIO (1,n-1)) [1..k]
    return (all (\ a -> exM a (n-1) n == 1) as)
-
+ 
   test_F :: Int -> IO Integer
   test_F k = do
-    test_F_R (composites) k 1000
+    test_F_R (carmichael) k 1000
 
   test_F_R :: [Integer] -> Int -> Int -> IO Integer
   test_F_R [] _ _ = return 0
@@ -66,3 +63,10 @@
         return h
       else
         test_F_R t k n
+
+  carmichael :: [Integer]
+  carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) | 
+      k <- [2..], 
+      isPrime (6*k+1), 
+      isPrime (12*k+1), 
+      isPrime (18*k+1) ]

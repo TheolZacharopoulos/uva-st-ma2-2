@@ -1,11 +1,11 @@
-module Lecture6
+module Lecture6_1
   
 where 
 
 modularExp :: Integer -> Integer -> Integer -> Integer
 modularExp _ 0 _ = 1
 modularExp b e m =  
-  if e `mod` 2 == 1 then
+  if odd e then
      (result * b) `mod` m
   else
     result
