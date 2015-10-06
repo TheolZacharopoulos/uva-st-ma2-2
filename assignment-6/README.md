@@ -8,11 +8,9 @@ Below is a graph that compares the performance of the original `expM` and
 our implementation of `exM`. The y-axis is a logscale of the execution time in
 seconds, you can interpret the x-axis as a "logscale of the exponent".
 
-*DOUBLE CHECK PLS*
-*It looks like the original `expM` grows linearly with the size of the
-exponent; if the exponent is multiplied by 10, `expM` takes 10 times
-longer. `exM` seems to grow logarithmically with the size of the exponent; if
-the exponent is multiplied by 10, `exM` takes perhaps 2 times longer.*
+*DOUBLE CHECK*
+`expM` grows exponentially with the size of the exponent. `exM` seems to grow
+logarithmically.
 
 ![expM vs exM](exMtests.png)
 
