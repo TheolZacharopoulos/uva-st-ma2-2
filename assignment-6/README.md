@@ -9,7 +9,7 @@ our implementation of `exM`. The y-axis is a logscale of the execution time in
 seconds, you can interpret the x-axis as a "logscale of the exponent".
 
 *DOUBLE CHECK*
-`expM` grows exponentially with the size of the exponent. `exM` seems to grow
+`expM` grows linearly with the size of the exponent. `exM` seems to grow
 logarithmically.
 
 ![expM vs exM](exMtests.png)
