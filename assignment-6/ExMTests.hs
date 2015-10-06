@@ -39,7 +39,7 @@ gnuplotBenchmark xs = do
           writeScript = writeFile (prefix++".plot") $ concat [
                             "set xtics ("++labels++")\n\n",
                             "set logscale y\n",
-                            "set term png size 800,800\nset output\""++prefix++".png\"\n\n",
+                            "set term png size 800,600\nset output\""++prefix++".png\"\n\n",
                             "set boxwidth 0.5\nset style fill solid\n\n",
                             "plot '"++fpd++"' every 2    using 1:2 with boxes ls 1 title \"expM 10^6 10^e 333\",\\\n",
                             "     '"++fpd++"' every 2::1 using 1:2 with boxes ls 2 title \"exM 10^6 10^e 333\""]
