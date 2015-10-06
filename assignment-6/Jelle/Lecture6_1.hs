@@ -3,7 +3,7 @@ module Lecture6_1
 where 
 
 modularExp :: Integer -> Integer -> Integer -> Integer
-modularExp _ 0 _ = 1
+modularExp _ 0 m = 1 `mod` m
 modularExp b e m =  
   if odd e then
      (result * b) `mod` m
