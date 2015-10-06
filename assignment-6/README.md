@@ -5,7 +5,8 @@ See the end of `Lecture6.hs`.
 
 ## Exercise 2
 Below is a graph that compares the performance of the original `expM` and
-our implementation of `exM` (_note: the y-axis is logscale_).
+our implementation of `exM`
+(_note: the y-axis is a logscale of the execution time in seconds_).
 
 ![expM vs exM](exMtests.png)
 
