@@ -5,14 +5,16 @@ import Lecture6
 import Data.Time
 import Control.Exception.Base
 
-main = do
-   putStrLn "Testing with exM function from Lecture 6"
+test b e m = do
+   putStrLn $ "Testing expM "++show b++" "++show e++" "++show m
    start <- getCurrentTime
-   evaluate (expM (12^6) (12^7) 555)
+   evaluate $ expM b e m
    stop <- getCurrentTime
    putStrLn ("Finished in " ++ (show $ diffUTCTime stop start))
-   putStrLn ("Testing with custom myExM function")
+   putStrLn $ "Testing exM "++show b++" "++show e++" "++show m
    start <- getCurrentTime
-   evaluate (exM (12^6) (12^7) 555)
+   evaluate $ exM b e m
    stop <- getCurrentTime
    putStrLn ("Finished in " ++ (show $ diffUTCTime stop start))
+
+main = sequence_ $ take 3 $ map (\x -> test x x x) (iterate (*10) (10^6))
