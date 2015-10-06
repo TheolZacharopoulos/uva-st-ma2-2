@@ -27,4 +27,5 @@ the Least-False-Positive test of exercise 6 is slower than exercise 5.
 ## Exercise 7
 To test that we got the right Mersenne primes we compared them with the
 numbers given in the `Lecture6.hs` file. We found that a precision of 1
-frequently gives you false positives while a precision of 10 mostly works.
+frequently gives you false positives while a precision of 10 performs
+better.
