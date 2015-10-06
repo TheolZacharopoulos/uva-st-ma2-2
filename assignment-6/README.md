@@ -4,7 +4,10 @@
 See the end of `Lecture6.hs`.
 
 ## Exercise 2
-*GOnna make a graph, it's gonna be cool :)*
+Below is a graph that compares the performance of the original `expM` and
+our implementation of `exM` (_note: the y-axis is logscale_).
+
+![expM vs exM](exMtests.png)
 
 ## Exercise 3
 See `Composites.hs`
