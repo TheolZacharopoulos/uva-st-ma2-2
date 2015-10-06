@@ -26,4 +26,4 @@
   primes = 2 : filter isPrime [3..]
 
   composites :: [Integer]
-  composites = 0 : filter (not . isPrime) [1..]
+  composites = 1 : filter (not . isPrime) [2..]
