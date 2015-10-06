@@ -1,8 +1,6 @@
-module Composites
+module Composites where 
 
-where 
-
-import Lecture6
+import Lecture6Exm
 
 -- A composite number is any integer greater than one (>1)
 -- that is not a prime number. (source: wikipedia)
